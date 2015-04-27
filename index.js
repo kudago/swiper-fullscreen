@@ -45,12 +45,12 @@ function SwiperFullscreen(options) {
 			lazyLoading: true,
 			preloadImages: false,
 			lazyLoadingOnTransitionStart: true,
+			keyboardControl: true,
 			nextButton: q('.swiper-button-next', self.el),
 			prevButton: q('.swiper-button-prev', self.el)
 		});
 
 		swiper.slideTo(self.activeSlide, 0);
-		swiper.enableKeyboardControl();
 
 		css(document.body, {
 			'overflow': 'hidden'
