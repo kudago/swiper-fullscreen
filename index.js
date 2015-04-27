@@ -3,7 +3,6 @@ var dialog = require('dialog-component');
 var extend = require('xtend/mutable');
 var domify = require('domify');
 var css = require('mucss/css');
-var on = require('emmy/on');
 var sliderHTML = require('./index.html');
 var itemHTML = require('./item.html');
 var q = require('queried');
