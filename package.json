@@ -1,0 +1,14 @@
+{
+  "name": "swiper-fullscreen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "browserify": {
+  	"transform": "stringify"
+  },
+  "author": "Yura Trambitskiy <tr.yura@yahoo.com>",
+  "license": "MIT"
+}
