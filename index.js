@@ -73,6 +73,7 @@ function SwiperFullscreen(options) {
 extend(SwiperFullscreen.prototype, {
 
 	render: function(data) {
+		data.title = data.title || '';
 		return domify(
 			itemHTML
 				.replace("%src%", data.src)
