@@ -5,6 +5,7 @@
 	height: 100%;
 }
 .dialog.dialog-slider-fullscreen .fs-swiper-slide {
+	text-align: center;
 	position: relative;
 	background: #222;
 	white-space: nowrap;
@@ -47,4 +48,5 @@
 	background: rgba(0,0,0,.5);
 	color: #fff;
 	font-size: 13px;
+	text-align: left;
 }

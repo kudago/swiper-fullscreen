@@ -1,7 +1,7 @@
 {
   "name": "swiper-fullscreen",
-  "version": "1.0.3",
-  "description": "",
+  "version": "1.0.4",
+  "description": "Lightbox component based on Swiper js and Dialog",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
