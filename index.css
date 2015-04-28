@@ -4,11 +4,12 @@
 	width: 100%;
 	height: 100%;
 }
-.dialog.dialog-slider-fullscreen .post-big-preview-slide {
+.dialog.dialog-slider-fullscreen .fs-swiper-slide {
+	position: relative;
 	background: #222;
 	white-space: nowrap;
 }
-.dialog.dialog-slider-fullscreen .post-big-preview-slide:before {
+.dialog.dialog-slider-fullscreen .fs-swiper-slide:before {
 	/*vertically aligning small images*/
 	content: "";
 	display: inline-block;
@@ -24,17 +25,28 @@
 	border: none;
 	background: #222;
 }
-.dialog.dialog-slider-fullscreen .post-big-preview {
+.dialog.dialog-slider-fullscreen .fs-swiper {
 	height: 100%;
 }
 
 /*make image match screen size*/
-.dialog.dialog-slider-fullscreen .post-big-preview-slider,
+.dialog.dialog-slider-fullscreen .fs-swiper-container,
 .dialog.dialog-slider-fullscreen .content .body {
 	height: 100%;
 }
-.dialog.dialog-slider-fullscreen .post-big-preview-slider,
-.dialog.dialog-slider-fullscreen .post-big-preview-slide,
-.dialog.dialog-slider-fullscreen .post-big-preview-image {
+.dialog.dialog-slider-fullscreen .fs-swiper-container,
+.dialog.dialog-slider-fullscreen .fs-swiper-slide,
+.dialog.dialog-slider-fullscreen .fs-swiper-image {
+	vertical-align: middle;
 	max-height: 100%;
+}
+
+.fs-swiper-caption {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 10px;
+	background: rgba(0,0,0,.5);
+	color: #fff;
+	font-size: 13px;
 }

@@ -1,8 +1,8 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = "<div class=\"post-big-preview\">\n\t<div class=\"swiper-container post-big-preview-slider\">\n\t\t<div class=\"swiper-wrapper\"></div>\n\t\t<div class=\"swiper-button-fullscreen\"></div>\n\t</div>\n</div>\n";
+module.exports = "<div class=\"fs-swiper\">\n\t<div class=\"swiper-container fs-swiper-container\">\n\t\t<div class=\"swiper-wrapper\"></div>\n\t\t<div class=\"swiper-button-fullscreen\"></div>\n\t</div>\n</div>\n";
 
 },{}],2:[function(require,module,exports){
-module.exports = "<div class=\"swiper-slide post-big-preview-slide\">\n\t<img\n\t\tclass=\"post-big-preview-image swiper-lazy\"\n\t\tdata-src=\"%src%\"\n\t\t/>\n\t<div class=\"post-big-preview-caption\">\n\t\t%title%\n\t</div>\n\t<div class=\"swiper-lazy-preloader swiper-lazy-preloader-white\"></div>\n</div>";
+module.exports = "<div class=\"swiper-slide fs-swiper-slide\">\n\t<img\n\t\tclass=\"fs-swiper-image swiper-lazy\"\n\t\tdata-src=\"%src%\"\n\t\t/>\n\t<div class=\"fs-swiper-caption\">\n\t\t%title%\n\t</div>\n\t<div class=\"swiper-lazy-preloader swiper-lazy-preloader-white\"></div>\n</div>";
 
 },{}],3:[function(require,module,exports){
 

@@ -16,15 +16,17 @@
 		margin: 0;
 		padding: 0;
 	}
-	.swiper-container {
+	.swiper-container--simple {
 		width: 500px;
 		height: 300px;
 		margin: 20px auto;
 	}
 	.swiper-slide {
-	    text-align: center;
-	    font-size: 18px;
-	    background: #fff;
+		text-align: center;
+	}
+	.swiper-slide--simple {
+		font-size: 18px;
+		background: #fff;
 	}
 	</style>
 
@@ -32,14 +34,14 @@
 <body>
 	
 	<!-- Swiper -->
-		<div class="swiper-container">
+		<div class="swiper-container swiper-container--simple">
 			<div class="swiper-wrapper">
-				<div class="swiper-slide">
+				<div class="swiper-slide swiper-slide--simple">
 					<img src="http://placehold.it/500x260">
 					<br>
 					<a href="#" class="fullscreen">Go fullscreen</a>
 				</div>
-				<div class="swiper-slide">
+				<div class="swiper-slide swiper-slide--simple">
 					<img src="http://placekitten.com/g/500/260">
 					<br>
 					<a href="#" class="fullscreen">Go fullscreen</a>
@@ -72,7 +74,6 @@
 							title: "Cat's in the cradle"
 						}
 					];
-					console.dir(swiper);
 					new SwiperFullscreen({
 						data: data,
 						activeIndex: swiper.activeIndex
