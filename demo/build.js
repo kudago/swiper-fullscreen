@@ -1873,7 +1873,7 @@ function SwiperFullscreen(options) {
 
 	var defaults = {
 		data: [],
-		activeSlide: 0,
+		activeIndex: 1,
 	};
 
 	extend(self, defaults, options);
@@ -1912,7 +1912,7 @@ function SwiperFullscreen(options) {
 			prevButton: q('.swiper-button-prev', self.el)
 		});
 
-		swiper.slideTo(self.activeSlide, 0);
+		swiper.slideTo(self.activeIndex, 0);
 
 		css(document.body, {
 			'overflow': 'hidden'
