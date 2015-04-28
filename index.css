@@ -1,0 +1,40 @@
+.dialog.dialog-slider-fullscreen {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.dialog.dialog-slider-fullscreen .post-big-preview-slide {
+	background: #222;
+	white-space: nowrap;
+}
+.dialog.dialog-slider-fullscreen .post-big-preview-slide:before {
+	/*vertically aligning small images*/
+	content: "";
+	display: inline-block;
+	width: 1px;
+	height: 100%;
+	vertical-align: middle;
+}
+.dialog.dialog-slider-fullscreen .content {
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	padding: 0 20px;
+	border: none;
+	background: #222;
+}
+.dialog.dialog-slider-fullscreen .post-big-preview {
+	height: 100%;
+}
+
+/*make image match screen size*/
+.dialog.dialog-slider-fullscreen .post-big-preview-slider,
+.dialog.dialog-slider-fullscreen .content .body {
+	height: 100%;
+}
+.dialog.dialog-slider-fullscreen .post-big-preview-slider,
+.dialog.dialog-slider-fullscreen .post-big-preview-slide,
+.dialog.dialog-slider-fullscreen .post-big-preview-image {
+	max-height: 100%;
+}

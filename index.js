@@ -25,8 +25,12 @@ function SwiperFullscreen(options) {
 	//create and append slides
 	self.data.forEach(function(itemData) {
 		var item = self.render(itemData);
-		self.append(item);
+		self.appendItem(item);
 	});
+
+	if (self.data.length > 1) {
+		self.appendArrows();
+	}
 
 	//prepare and open dialog with swiper
 	dialogItem = dialog(null, self.el)
@@ -81,8 +85,19 @@ extend(SwiperFullscreen.prototype, {
 		);
 	},
 
-	append: function(element) {
+	appendItem: function(element) {
 		this.el.querySelector('.swiper-wrapper').appendChild(element);
+	},
+
+	appendArrows: function() {
+		var prevArrow = document.createElement('div');
+		prevArrow.className = 'swiper-button-prev';
+		var nextArrow = document.createElement('div');
+		nextArrow.className = 'swiper-button-next';
+
+		var container = q('.swiper-container', this.el);
+		container.appendChild(prevArrow);
+		container.appendChild(nextArrow);
 	}
 
 });
