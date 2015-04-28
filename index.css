@@ -28,7 +28,6 @@
 .dialog.dialog-slider-fullscreen .fs-swiper {
 	height: 100%;
 }
-
 /*make image match screen size*/
 .dialog.dialog-slider-fullscreen .fs-swiper-container,
 .dialog.dialog-slider-fullscreen .content .body {
@@ -40,7 +39,6 @@
 	vertical-align: middle;
 	max-height: 100%;
 }
-
 .fs-swiper-caption {
 	position: absolute;
 	bottom: 0;
