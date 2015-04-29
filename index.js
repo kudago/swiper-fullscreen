@@ -7,6 +7,11 @@ var sliderHTML = require('./index.html');
 var itemHTML = require('./item.html');
 var q = require('queried');
 
+/**
+ * Create an instance of fullscreen swiper
+ * @constructor
+ * @param {Object} options Initialization options
+ */
 function SwiperFullscreen(options) {
 
 	if (!(this instanceof(SwiperFullscreen))) return new SwiperFullscreen(options);
@@ -69,16 +74,28 @@ extend(SwiperFullscreen.prototype, {
 		keyboardControl: true
 	},
 
+	/**
+	 * show the dialog with instance slider
+	 * @param  {Number} slideIndex Index of slide to show when opened
+	 */
 	show: function(slideIndex) {
 		this.dialog.show();
 		this.swiper.update();
 		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
 	},
 
+	/**
+	 * hide the instanse's dialog
+	 */
 	hide: function() {
 		this.dialog.hide();
 	},
 
+	/**
+	 * render slide item with data provided
+	 * @param  {Object} data - data to be rendered
+	 * @return {DomObject}      Slide DOM element
+	 */
 	render: function(data) {
 		data.title = data.title || '';
 		return domify(
@@ -88,6 +105,10 @@ extend(SwiperFullscreen.prototype, {
 		);
 	},
 
+	/**
+	 * append slide to the slider
+	 * @param  {DomObject} element - slide element
+	 */
 	appendItem: function(element) {
 		this.el.querySelector('.swiper-wrapper').appendChild(element);
 	},
