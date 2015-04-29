@@ -3606,6 +3606,11 @@ var sliderHTML = require('./index.html');
 var itemHTML = require('./item.html');
 var q = require('queried');
 
+/**
+ * Create an instance of fullscreen swiper
+ * @constructor
+ * @param {Object} options Initialization options
+ */
 function SwiperFullscreen(options) {
 
 	if (!(this instanceof(SwiperFullscreen))) return new SwiperFullscreen(options);
@@ -3619,7 +3624,7 @@ function SwiperFullscreen(options) {
 	//create and append slides
 	self.data.forEach(function(itemData) {
 		var item = self.render(itemData);
-		self.appendItem(item);
+		self.el.querySelector('.swiper-wrapper').appendChild(item);
 	});
 
 	if (self.navigation && self.data.length > 1) {
@@ -3668,16 +3673,28 @@ extend(SwiperFullscreen.prototype, {
 		keyboardControl: true
 	},
 
+	/**
+	 * show the dialog with instance slider
+	 * @param  {Number} slideIndex Index of slide to show when opened
+	 */
 	show: function(slideIndex) {
 		this.dialog.show();
 		this.swiper.update();
 		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
 	},
 
+	/**
+	 * hide the instanse's dialog
+	 */
 	hide: function() {
 		this.dialog.hide();
 	},
 
+	/**
+	 * render slide item with data provided
+	 * @param  {Object} data - data to be rendered
+	 * @return {DomObject}      Slide DOM element
+	 */
 	render: function(data) {
 		data.title = data.title || '';
 		return domify(
@@ -3685,10 +3702,6 @@ extend(SwiperFullscreen.prototype, {
 				.replace("%src%", data.src)
 				.replace("%title%", data.title)
 		);
-	},
-
-	appendItem: function(element) {
-		this.el.querySelector('.swiper-wrapper').appendChild(element);
 	},
 
 	appendNavigation: function() {

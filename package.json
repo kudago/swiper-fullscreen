@@ -1,6 +1,6 @@
 {
   "name": "swiper-fullscreen",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Lightbox component based on Swiper js and Dialog",
   "main": "index.js",
   "scripts": {

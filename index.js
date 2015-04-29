@@ -25,7 +25,7 @@ function SwiperFullscreen(options) {
 	//create and append slides
 	self.data.forEach(function(itemData) {
 		var item = self.render(itemData);
-		self.appendItem(item);
+		self.el.querySelector('.swiper-wrapper').appendChild(item);
 	});
 
 	if (self.navigation && self.data.length > 1) {
@@ -103,14 +103,6 @@ extend(SwiperFullscreen.prototype, {
 				.replace("%src%", data.src)
 				.replace("%title%", data.title)
 		);
-	},
-
-	/**
-	 * append slide to the slider
-	 * @param  {DomObject} element - slide element
-	 */
-	appendItem: function(element) {
-		this.el.querySelector('.swiper-wrapper').appendChild(element);
 	},
 
 	appendNavigation: function() {
