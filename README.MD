@@ -1,6 +1,8 @@
 # Swiper-Fullscreen
 
-A fullscreen gallery with [component-dialog](https://github.com/component/dialog) and [swiper](https://github.com/nolimits4web/Swiper).
+A fullscreen gallery made with [component-dialog](https://github.com/component/dialog) and [swiper](https://github.com/nolimits4web/Swiper).
+
+[Demo](http://kudago.github.io/swiper-fullscreen/)
 
 ## Basic usage
 
