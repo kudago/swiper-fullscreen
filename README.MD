@@ -4,11 +4,11 @@ A fullscreen gallery made with [component-dialog](https://github.com/component/d
 
 [Demo](http://kudago.github.io/swiper-fullscreen/)
 
-## Basic usage
+## Usage
 
 The componentn is written to be used with browserify.
 
-`$ npm install emmy`
+`$ npm install swiper-fullscreen`
 
 Then you can create an instance of the slider and manage it through API.
 
@@ -25,8 +25,8 @@ swiperFullscreen.show();
 ```js
 var options = {
 	navigation: true, //show navigation arrows if slides number is more than 1
-	render: function(data) {}, // method used to render slides. You can overwrite it to use your custom templates
-	appendNavigation: function() {}, // method used to append navigation to slider if needed. Can be overwritten when custom navigation is  used
+	render: function (data) {}, // method used to render slides. You can overwrite it to use your custom templates
+	appendNavigation: function () {}, // method used to append navigation to slider if needed. Can be overwritten when custom navigation is  used
 	swiper: {...object...} // swiper settings for the slideshow
 };
 
@@ -39,3 +39,4 @@ swiperFullscreen.hide(); // hide the dialog with the slider
 
 swiperFullscreen.show(); //...and show it
 ```
+[![NPM](https://nodei.co/npm/swiper-fullscreen.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/swiper-fullscreen/)
