@@ -3626,8 +3626,10 @@ function SwiperFullscreen(options) {
 		self.appendNavigation();
 	}
 
+	self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
+
 	//prepare and open dialog with swiper
-	dialogItem = dialog(null, self.el)
+	self.dialog = dialog(null, self.el)
 	.effect('fade')
 	.overlay()
 	.fixed()
@@ -3635,14 +3637,10 @@ function SwiperFullscreen(options) {
 	.escapable()
 	.addClass('dialog-slider-fullscreen')
 	.on('show', function () {
-
-		self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
 		css(document.body, {
 			'overflow': 'hidden'
 		});
-
 	})
-	.show()
 	.on('close', closeDialog)
 	.on('hide', closeDialog)
 	.on('escape', closeDialog);
@@ -3668,6 +3666,18 @@ extend(SwiperFullscreen.prototype, {
 		preloadImages: false,
 		lazyLoadingOnTransitionStart: true,
 		keyboardControl: true
+	},
+
+	show: function(slideIndex) {
+		this.dialog.show();
+		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
+		//best way to update swiper
+		//does the same as swiper.update plus it lazy loads images
+		window.dispatchEvent(new Event('resize'));
+	},
+
+	hide: function() {
+		this.dialog.hide();
 	},
 
 	render: function(data) {

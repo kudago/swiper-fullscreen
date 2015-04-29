@@ -66,31 +66,35 @@
 
 			var links = document.querySelectorAll('.fullscreen');
 			linksArray = Array.prototype.slice.call(links);
-			linksArray.forEach(function(link) {
+
+			var data = [
+			{
+				src: "http://placehold.it/500x260",
+				title: "Hello, world"
+			},
+			{
+				src: "http://placekitten.com/g/500/258",
+				title: "Curiosity, what have you done to the cat?"
+			},
+			{
+				src: "http://placekitten.com/g/500/260",
+				title: "Cat's in the cradle"
+			}
+			];
+
+			var fsGallery = new SwiperFullscreen({
+				data: data,
+				swiper: {
+					initialSlide: swiper.activeIndex
+				}
+			});
+			linksArray.forEach(function(link, index) {
 				link.addEventListener('click', function(e) {
 					e.preventDefault();
-					var data = [
-						{
-							src: "http://placehold.it/500x260",
-							title: "Hello, world"
-						},
-						{
-							src: "http://placekitten.com/g/500/258",
-							title: "Curiosity, what have you done to the cat?"
-						},
-						{
-							src: "http://placekitten.com/g/500/260",
-							title: "Cat's in the cradle"
-						}
-					];
-					new SwiperFullscreen({
-						data: data,
-						swiper: {
-							initialSlide: swiper.activeIndex
-						}
-					});
-				})
-			})
+					fsGallery.show(index+1);
+				});
+			});
+
 		</script>
 
 </body>
