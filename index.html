@@ -1,6 +1,101 @@
-<div class="fs-swiper">
-	<div class="swiper-container fs-swiper-container">
-		<div class="swiper-wrapper"></div>
-		<div class="swiper-button-fullscreen"></div>
-	</div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Swiper fullscreen demo</title>
+	<link rel="stylesheet" href="dialog.css">
+	<link rel="stylesheet" href="swiper.css">
+	<link rel="stylesheet" href="index.css">
+
+	<style>
+	body {
+		background: #eee;
+		font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+		font-size: 14px;
+		color:#000;
+		margin: 0;
+		padding: 0;
+	}
+	.swiper-container--simple {
+		width: 500px;
+		height: 300px;
+		margin: 20px auto;
+	}
+	.swiper-slide {
+		text-align: center;
+	}
+	.swiper-slide--simple {
+		font-size: 18px;
+		background: #fff;
+	}
+	</style>
+
+</head>
+<body>
+	
+	<!-- Swiper -->
+		<div class="swiper-container swiper-container--simple">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide swiper-slide--simple">
+					<img src="http://placehold.it/500x260">
+					<br>
+					<a href="#" class="fullscreen">Go fullscreen</a>
+				</div>
+				<div class="swiper-slide swiper-slide--simple">
+					<img src="http://placekitten.com/g/500/258">
+					<br>
+					<a href="#" class="fullscreen">Go fullscreen</a>
+				</div>
+				<div class="swiper-slide swiper-slide--simple">
+					<img src="http://placekitten.com/g/500/260">
+					<br>
+					<a href="#" class="fullscreen">Go fullscreen</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- JS -->
+		<script src="build.js"></script>
+
+		<!-- Init JS -->
+		<script>
+			var Swiper = require('swiper');
+			var SwiperFullscreen = require('swiper-fullscreen');
+
+			var swiper = new Swiper('.swiper-container');
+
+			var links = document.querySelectorAll('.fullscreen');
+			linksArray = Array.prototype.slice.call(links);
+
+			var data = [
+			{
+				src: "http://placehold.it/500x260",
+				title: "Hello, world"
+			},
+			{
+				src: "http://placekitten.com/g/500/258",
+				title: "Curiosity, what have you done to the cat?"
+			},
+			{
+				src: "http://placekitten.com/g/500/260",
+				title: "Cat's in the cradle"
+			}
+			];
+
+			var fsGallery = new SwiperFullscreen({
+				data: data,
+				swiper: {
+					initialSlide: swiper.activeIndex
+				}
+			});
+			linksArray.forEach(function(link, index) {
+				link.addEventListener('click', function(e) {
+					e.preventDefault();
+					fsGallery.show(index+1);
+				});
+			});
+
+		</script>
+
+</body>
+</html>
