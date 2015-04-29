@@ -1,8 +1,12 @@
 {
   "name": "swiper-fullscreen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Lightbox component based on Swiper js and Dialog",
   "main": "index.js",
+  "repository": { 
+    "type" : "git",
+    "url" : "https://github.com/kudago/swiper-fullscreen.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify -r swiper -r ./index.js:swiper-fullscreen > demo/build.js"
