@@ -31,7 +31,9 @@ var options = {
 	appendNavigation: function() {}, // method used to append navigation to slider if needed. Can be overwritten when custom navigation is  used
 	swiper: {...object...} // swiper settings for the slideshow
 };
+
 var swiperFullscreen = new SwiperFullscreen(options);
+
 swiperFullscreen.swiper; // the instance's swiper object so you can manipulate it
 swiperFullscreen.dialog; // the instance's dialog object as well at your service
 
