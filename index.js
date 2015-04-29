@@ -1,6 +1,6 @@
 var swiper = require('swiper');
 var dialog = require('dialog-component');
-var extend = require('xtend/mutable');
+var extend = require('deep-extend');
 var domify = require('domify');
 var css = require('mucss/css');
 var sliderHTML = require('./index.html');
@@ -13,12 +13,7 @@ function SwiperFullscreen(options) {
 
 	var self = this;
 
-	var defaults = {
-		data: [],
-		activeIndex: 0,
-	};
-
-	extend(self, defaults, options);
+	extend(self, options);
 
 	self.el = domify(sliderHTML);
 
@@ -28,12 +23,12 @@ function SwiperFullscreen(options) {
 		self.appendItem(item);
 	});
 
-	if (self.data.length > 1) {
-		self.appendArrows();
+	if (self.navigation && self.data.length > 1) {
+		self.appendNavigation();
 	}
 
 	//prepare and open dialog with swiper
-	dialogItem = dialog(null, self.el)
+	self.dialog = dialog(null, self.el)
 	.effect('fade')
 	.overlay()
 	.fixed()
@@ -42,20 +37,7 @@ function SwiperFullscreen(options) {
 	.addClass('dialog-slider-fullscreen')
 	.on('show', function () {
 
-		var swiper = new Swiper(q('.swiper-container', self.el), {
-			loop: true,
-			effect: 'fade',
-			speed: 200,
-			lazyLoading: true,
-			preloadImages: false,
-			lazyLoadingOnTransitionStart: true,
-			keyboardControl: true,
-			nextButton: q('.swiper-button-next', self.el),
-			prevButton: q('.swiper-button-prev', self.el)
-		});
-
-		swiper.slideTo(self.activeIndex, 0);
-
+		self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
 		css(document.body, {
 			'overflow': 'hidden'
 		});
@@ -76,6 +58,19 @@ function SwiperFullscreen(options) {
 
 extend(SwiperFullscreen.prototype, {
 
+	data: [],
+	navigation: true,
+
+	swiper: {
+		loop: true,
+		effect: 'fade',
+		speed: 200,
+		lazyLoading: true,
+		preloadImages: false,
+		lazyLoadingOnTransitionStart: true,
+		keyboardControl: true
+	},
+
 	render: function(data) {
 		data.title = data.title || '';
 		return domify(
@@ -89,12 +84,24 @@ extend(SwiperFullscreen.prototype, {
 		this.el.querySelector('.swiper-wrapper').appendChild(element);
 	},
 
-	appendArrows: function() {
+	appendNavigation: function() {
+		var self = this;
+
+		//create elements for nav buttons
 		var prevArrow = document.createElement('div');
 		prevArrow.className = 'swiper-button-prev';
 		var nextArrow = document.createElement('div');
 		nextArrow.className = 'swiper-button-next';
 
+		//bind click events
+		prevArrow.addEventListener('click', function() {
+			self.swiper.slidePrev();
+		});
+		nextArrow.addEventListener('click', function() {
+			self.swiper.slideNext();
+		});
+
+		//append the buttons
 		var container = q('.swiper-container', this.el);
 		container.appendChild(prevArrow);
 		container.appendChild(nextArrow);

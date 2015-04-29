@@ -85,7 +85,9 @@
 					];
 					new SwiperFullscreen({
 						data: data,
-						activeIndex: swiper.activeIndex
+						swiper: {
+							initialSlide: swiper.activeIndex
+						}
 					});
 				})
 			})
