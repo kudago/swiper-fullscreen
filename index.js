@@ -71,10 +71,8 @@ extend(SwiperFullscreen.prototype, {
 
 	show: function(slideIndex) {
 		this.dialog.show();
+		this.swiper.update();
 		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
-		//best way to update swiper
-		//does the same as swiper.update plus it lazy loads images
-		window.dispatchEvent(new Event('resize'));
 	},
 
 	hide: function() {
