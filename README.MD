@@ -33,7 +33,6 @@ var options = {
 var swiperFullscreen = new SwiperFullscreen(options);
 
 swiperFullscreen.swiper; // the instance's swiper object so you can manipulate it
-swiperFullscreen.dialog; // the instance's dialog object as well at your service
 swiperFullscreen.show(slideIndex); //instance's method to show the dialog popup. 'slideIndex' parameter is optional
 swiperFullscreen.hide(); // hide the dialog with the slider
 

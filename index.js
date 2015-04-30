@@ -32,30 +32,8 @@ function SwiperFullscreen(options) {
 		self.appendNavigation();
 	}
 
+	//create swiper instance for the gallery
 	self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
-
-	//prepare and open dialog with swiper
-	self.dialog = dialog(null, self.el)
-	.effect('fade')
-	.overlay()
-	.fixed()
-	.closable()
-	.escapable()
-	.addClass('dialog-slider-fullscreen')
-	.on('show', function () {
-		css(document.body, {
-			'overflow': 'hidden'
-		});
-	})
-	.on('close', closeDialog)
-	.on('hide', closeDialog)
-	.on('escape', closeDialog);
-
-	function closeDialog () {
-		css(document.body, {
-			'overflow': null
-		});
-	}
 
 }
 
@@ -79,16 +57,41 @@ extend(SwiperFullscreen.prototype, {
 	 * @param  {Number} slideIndex Index of slide to show when opened
 	 */
 	show: function(slideIndex) {
-		this.dialog.show();
+
+		//prepare and open dialog with swiper
+		this.dialog = dialog(null, this.el)
+		.effect('fade')
+		.overlay()
+		.fixed()
+		.closable()
+		.escapable()
+		.addClass('dialog-slider-fullscreen')
+		.on('show', function () {
+			css(document.body, {
+				'overflow': 'hidden'
+			});
+		})
+		.on('close', closeDialog)
+		.on('hide', closeDialog)
+		.on('escape', closeDialog)
+		.show();
+
+		function closeDialog () {
+			css(document.body, {
+				'overflow': null
+			});
+		}
+
 		this.swiper.update();
 		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
+
 	},
 
 	/**
 	 * hide the instanse's dialog
 	 */
 	hide: function() {
-		this.dialog.hide();
+		this.dialog && this.dialog.hide();
 	},
 
 	/**
@@ -105,6 +108,9 @@ extend(SwiperFullscreen.prototype, {
 		);
 	},
 
+	/**
+	 * Method describing how navigation is appended
+	 */
 	appendNavigation: function() {
 		var self = this;
 
