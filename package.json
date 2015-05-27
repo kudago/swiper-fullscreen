@@ -3,9 +3,9 @@
   "version": "1.1.5",
   "description": "Lightbox component based on Swiper js and Dialog",
   "main": "index.js",
-  "repository": { 
-    "type" : "git",
-    "url" : "https://github.com/kudago/swiper-fullscreen.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kudago/swiper-fullscreen.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,13 +15,13 @@
     "transform": "stringify"
   },
   "dependencies": {
-    "deep-extend": "^0.3.3",
     "dialog-component": "git://github.com/component/dialog.git",
     "domify": "^1.3.1",
     "mucss": "^0.5.7",
     "queried": "^1.4.1",
     "stringify": "^3.1.0",
-    "swiper": "3.0.4"
+    "swiper": "3.0.4",
+    "xtend": "^4.0.0"
   },
   "author": "Yura Trambitskiy <tr.yura@yahoo.com>",
   "license": "MIT",

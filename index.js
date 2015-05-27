@@ -1,6 +1,6 @@
 var swiper = require('swiper');
 var dialog = require('dialog-component');
-var extend = require('deep-extend');
+var extend = require('xtend/mutable');
 var domify = require('domify');
 var css = require('mucss/css');
 var sliderHTML = require('./index.html');
@@ -19,6 +19,11 @@ function SwiperFullscreen(options) {
 	var self = this;
 
 	extend(self, options);
+
+	if (options.swiper) {
+		self.swiper = Object.create(SwiperFullscreen.prototype.swiper);
+		extend(self.swiper, options.swiper);
+	}
 
 	self.el = domify(sliderHTML);
 
