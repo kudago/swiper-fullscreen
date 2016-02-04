@@ -2273,7 +2273,10 @@ var SwiperFullscreen = function () {
 
 		var markup = this.getMarkup(this.data);
 		this.el = domify(markup);
-		this.swiper = new Swiper(q('.swiper-container', this.el), this.swiperOptions);
+
+		var container = q('.swiper-container', this.el);
+		this.swiper = new Swiper(container, this.swiperOptions);
+
 		this.bindEvents();
 	}
 
@@ -2346,9 +2349,10 @@ var SwiperFullscreen = function () {
 			}).on('close', closeDialog).on('hide', closeDialog).on('escape', closeDialog).show();
 
 			this.swiper.update();
-			if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
+			if (slideIndex !== undefined) {
+				this.swiper.slideTo(slideIndex, 0);
+			}
 
-			// TODO: move it to instanse's method
 			function closeDialog() {
 				css(document.body, {
 					'overflow': null
