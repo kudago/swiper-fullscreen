@@ -3,133 +3,153 @@ const dialog = require('dialog-component');
 const extend = require('xtend/mutable');
 const domify = require('domify');
 const css = require('mucss/css');
-const sliderHTML = require('./index.html');
-const itemHTML = require('./item.html');
 const q = require('queried');
+const events = require('events-mixin');
+
+const SWIPER_DEFAULTS = {
+	loop: true,
+	effect: 'fade',
+	speed: 200,
+	lazyLoading: true,
+	preloadImages: false,
+	lazyLoadingOnTransitionStart: true,
+	keyboardControl: true,
+};
 
 /**
  * Create an instance of fullscreen swiper
  * @constructor
  * @param {Object} options Initialization options
  */
-function SwiperFullscreen(options) {
+class SwiperFullscreen {
+	constructor(options) {
+		extend(this, {
+			data: [],
+			navigation: true,
+			swiperOptions: SWIPER_DEFAULTS,
+		}, options);
 
-	if (!(this instanceof(SwiperFullscreen))) return new SwiperFullscreen(options);
-
-	extend(this, options);
-
-	if (options.swiper) {
-		this.swiper = Object.create(SwiperFullscreen.prototype.swiper);
-		extend(this.swiper, options.swiper);
+		const markup = this.getMarkup(this.data);
+		this.el = domify(markup);
+		this.swiper = new Swiper(q('.swiper-container', this.el), this.swiperOptions);
+		this.bindEvents();
 	}
 
-	this.el = domify(sliderHTML);
-
-	//create and append slides
-	this.data.forEach(itemData => {
-		const item = this.render(itemData);
-		this.el.querySelector('.swiper-wrapper').appendChild(item);
-	});
-
-	if (this.navigation && this.data.length > 1) {
-		this.appendNavigation();
+	bindEvents() {
+		this.events = events(this.el, this);
+		this.events.bind({
+			'click .swiper-button-prev': 'prevSlide',
+			'click .swiper-button-next': 'nextSlide',
+		});
 	}
 
-	//create swiper instance for the gallery
-	this.swiper = new Swiper(q('.swiper-container', this.el), this.swiper);
+	/**
+	 * get markup of the slider
+	 * @param  {Object} data - data to render
+	 * @return {String}      - html string
+	 */
+	getMarkup(data) {
+		const items = this.getItemsMarkup(data);
+		const navigation = this.getNavigationMarkup(data);
 
-}
+		return `
+			<div class="fs-swiper">
+				<div class="swiper-container fs-swiper-container">
+					<div class="swiper-wrapper">${ items }</div>
+					<div class="swiper-button-fullscreen"></div>
+					${ navigation }
+				</div>
+			</div>
+		`;
+	}
 
-extend(SwiperFullscreen.prototype, {
+	/**
+	 * get items list markup
+	 * @param  {Object} data - data to render
+	 * @return {String}      - html string
+	 */
+	getItemsMarkup(data) {
+		return data.reduce((prev, curr) => {
+			return prev + `
+				<div class="swiper-slide fs-swiper-slide">
+					<img class="fs-swiper-image swiper-lazy" data-src="${ curr.src }" />
+					<div class="fs-swiper-caption">
+						${ curr.title || '' }
+					</div>
+					<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+				</div>
+			`;
+		}, '');
+	}
 
-	data: [],
-	navigation: true,
+	/**
+	 * Get navigation markup if more than one slide
+	 * @return {String}      - html string
+	 */
+	getNavigationMarkup(data) {
+		if (this.navigation && data.length > 1) {
+			return `
+				<div class="swiper-button-prev"></div>
+				<div class="swiper-button-next"></div>
+			`;
+		}
 
-	swiper: {
-		loop: true,
-		effect: 'fade',
-		speed: 200,
-		lazyLoading: true,
-		preloadImages: false,
-		lazyLoadingOnTransitionStart: true,
-		keyboardControl: true
-	},
+		return '';
+	}
 
 	/**
 	 * show the dialog with instance slider
-	 * @param  {Number} slideIndex Index of slide to show when opened
+	 * @param {Number} slideIndex Index of slide to show when opened
 	 */
 	show(slideIndex) {
-
-		//prepare and open dialog with swiper
 		this.dialog = dialog(null, this.el)
-		.effect('fade')
-		.overlay()
-		.fixed()
-		.closable()
-		.escapable()
-		.addClass('dialog-slider-fullscreen')
-		.on('show', function () {
-			css(document.body, {
-				'overflow': 'hidden'
-			});
-		})
-		.on('close', closeDialog)
-		.on('hide', closeDialog)
-		.on('escape', closeDialog)
-		.show();
+			.effect('fade')
+			.overlay()
+			.fixed()
+			.closable()
+			.escapable()
+			.addClass('dialog-slider-fullscreen')
+			.on('show', function () {
+				css(document.body, {
+					'overflow': 'hidden'
+				});
+			})
+			.on('close', closeDialog)
+			.on('hide', closeDialog)
+			.on('escape', closeDialog)
+			.show();
 
+		this.swiper.update();
+		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
+
+		// TODO: move it to instanse's method
 		function closeDialog () {
 			css(document.body, {
 				'overflow': null
 			});
 		}
-
-		this.swiper.update();
-		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
-
-	},
+	}
 
 	/**
-	 * hide the instanse's dialog
+	 * hide the instance's dialog
 	 */
 	hide() {
 		this.dialog && this.dialog.hide();
-	},
-
-	/**
-	 * render slide item with data provided
-	 * @param  {Object} data - data to be rendered
-	 * @return {DomObject}      Slide DOM element
-	 */
-	render(data) {
-		data.title = data.title || '';
-		return domify(
-			itemHTML
-				.replace("%src%", data.src)
-				.replace("%title%", data.title)
-		);
-	},
-
-	/**
-	 * Method describing how navigation is appended
-	 */
-	appendNavigation() {
-		//create elements for nav buttons
-		const prevArrow = document.createElement('div');
-		prevArrow.className = 'swiper-button-prev';
-		const nextArrow = document.createElement('div');
-		nextArrow.className = 'swiper-button-next';
-
-		//bind click events
-		prevArrow.addEventListener('click', () => this.swiper.slidePrev());
-		nextArrow.addEventListener('click', () => this.swiper.slideNext());
-
-		//append the buttons
-		const container = q('.swiper-container', this.el);
-		container.appendChild(prevArrow);
-		container.appendChild(nextArrow);
 	}
-});
+
+	/**
+	 * go to previous slide
+	 */
+	prevSlide() {
+		this.swiper.slidePrev()
+	}
+
+	/**
+	 * go to next slide
+	 */
+	nextSlide() {
+		this.swiper.slideNext()
+	}
+}
 
 module.exports = SwiperFullscreen;

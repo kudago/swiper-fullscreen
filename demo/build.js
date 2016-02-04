@@ -1,10 +1,4 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = "module.exports = \"<div class=\\\"fs-swiper\\\">\\n\\t<div class=\\\"swiper-container fs-swiper-container\\\">\\n\\t\\t<div class=\\\"swiper-wrapper\\\"></div>\\n\\t\\t<div class=\\\"swiper-button-fullscreen\\\"></div>\\n\\t</div>\\n</div>\\n\";\n";
-
-},{}],2:[function(require,module,exports){
-module.exports = "module.exports = \"<div class=\\\"swiper-slide fs-swiper-slide\\\">\\n\\t<img\\n\\t\\tclass=\\\"fs-swiper-image swiper-lazy\\\"\\n\\t\\tdata-src=\\\"%src%\\\"\\n\\t\\t/>\\n\\t<div class=\\\"fs-swiper-caption\\\">\\n\\t\\t%title%\\n\\t</div>\\n\\t<div class=\\\"swiper-lazy-preloader swiper-lazy-preloader-white\\\"></div>\\n</div>\";\n";
-
-},{}],3:[function(require,module,exports){
 'use strict'
 
 /**
@@ -114,7 +108,7 @@ function flattenDownDepth (array, result, depth) {
   return result
 }
 
-},{}],4:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /*!
  * array-unique <https://github.com/jonschlinkert/array-unique>
  *
@@ -144,7 +138,7 @@ module.exports = function unique(arr) {
   return arr;
 };
 
-},{}],5:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*!
  * arrayify-compact <https://github.com/jonschlinkert/arrayify-compact>
  *
@@ -161,7 +155,19 @@ module.exports = function(arr) {
     .filter(Boolean);
 };
 
-},{"array-flatten":3}],6:[function(require,module,exports){
+},{"array-flatten":1}],4:[function(require,module,exports){
+var matches = require('matches-selector')
+
+module.exports = function (element, selector, checkYoSelf) {
+  var parent = checkYoSelf ? element : element.parentNode
+
+  while (parent && parent !== document) {
+    if (matches(parent, selector)) return parent;
+    parent = parent.parentNode
+  }
+}
+
+},{"matches-selector":19}],5:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -350,7 +356,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-},{"indexof":9}],7:[function(require,module,exports){
+},{"indexof":8}],6:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -513,7 +519,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -549,7 +555,7 @@ exports.unbind = function(el, type, fn, capture){
   el[unbind](prefix + type, fn, capture || false);
   return fn;
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {
@@ -557,7 +563,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function one(selector, el) {
   return el.querySelector(selector);
 }
@@ -580,7 +586,59 @@ exports.engine = function(obj){
   return exports;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+/**
+ * Module dependencies.
+ */
+
+var closest = require('closest')
+  , event = require('component-event');
+
+/**
+ * Delegate event `type` to `selector`
+ * and invoke `fn(e)`. A callback function
+ * is returned which may be passed to `.unbind()`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+// Some events don't bubble, so we want to bind to the capture phase instead
+// when delegating.
+var forceCaptureEvents = ['focus', 'blur'];
+
+exports.bind = function(el, selector, type, fn, capture){
+  if (forceCaptureEvents.indexOf(type) !== -1) capture = true;
+
+  return event.bind(el, type, function(e){
+    var target = e.target || e.srcElement;
+    e.delegateTarget = closest(target, selector, true, el);
+    if (e.delegateTarget) fn.call(el, e);
+  }, capture);
+};
+
+/**
+ * Unbind event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  if (forceCaptureEvents.indexOf(type) !== -1) capture = true;
+
+  event.unbind(el, type, fn, capture);
+};
+
+},{"closest":4,"component-event":7}],11:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -915,7 +973,7 @@ Dialog.prototype.remove = function(){
   return this;
 };
 
-},{"./template.html":12,"classes":6,"domify":13,"emitter":7,"event":8,"overlay":25,"query":10}],12:[function(require,module,exports){
+},{"./template.html":12,"classes":5,"domify":13,"emitter":6,"event":7,"overlay":27,"query":9}],12:[function(require,module,exports){
 module.exports = "<div class=\"dialog hide\">\n  <div class=\"content\">\n    <span class=\"title\">Title</span>\n    <a href=\"#\" class=\"close\">&times;<em>close</em></a>\n    <div class=\"body\">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n";
 
 },{}],13:[function(require,module,exports){
@@ -1199,6 +1257,217 @@ Emitter.prototype.hasListeners = function(event){
 };
 
 },{}],15:[function(require,module,exports){
+
+/**
+ * Module dependencies.
+ */
+
+var events = require('component-event');
+var delegate = require('delegate-events');
+var forceCaptureEvents = ['focus', 'blur'];
+
+/**
+ * Expose `Events`.
+ */
+
+module.exports = Events;
+
+/**
+ * Initialize an `Events` with the given
+ * `el` object which events will be bound to,
+ * and the `obj` which will receive method calls.
+ *
+ * @param {Object} el
+ * @param {Object} obj
+ * @api public
+ */
+
+function Events(el, obj) {
+  if (!(this instanceof Events)) return new Events(el, obj);
+  if (!el) throw new Error('element required');
+  if (!obj) throw new Error('object required');
+  this.el = el;
+  this.obj = obj;
+  this._events = {};
+}
+
+/**
+ * Subscription helper.
+ */
+
+Events.prototype.sub = function(event, method, cb){
+  this._events[event] = this._events[event] || {};
+  this._events[event][method] = cb;
+};
+
+/**
+ * Bind to `event` with optional `method` name.
+ * When `method` is undefined it becomes `event`
+ * with the "on" prefix.
+ *
+ * Examples:
+ *
+ *  Direct event handling:
+ *
+ *    events.bind('click') // implies "onclick"
+ *    events.bind('click', 'remove')
+ *    events.bind('click', 'sort', 'asc')
+ *
+ *  Delegated event handling:
+ *
+ *    events.bind('click li > a')
+ *    events.bind('click li > a', 'remove')
+ *    events.bind('click a.sort-ascending', 'sort', 'asc')
+ *    events.bind('click a.sort-descending', 'sort', 'desc')
+ *
+ *  Multiple events handling:
+ *
+ *    events.bind({
+ *      'click .remove': 'remove',
+ *      'click .add': 'add'
+ *    });
+ *
+ * @param {String|object} - object is used for multiple binding,
+ *                               string for single event binding
+ * @param {String|function} [arg2] - method to call (optional)
+ * @param {*} [arg3] - data for single event binding (optional)
+ * @return {Function} callback
+ * @api public
+ */
+
+Events.prototype.bind = function(arg1, arg2){
+  var bindEvent = function(event, method) {
+    var e = parse(event);
+    var el = this.el;
+    var obj = this.obj;
+    var name = e.name;
+    var method = method || 'on' + name;
+    var args = [].slice.call(arguments, 2);
+
+    // callback
+    function cb(){
+      var a = [].slice.call(arguments).concat(args);
+
+      if (typeof method === 'function') {
+          method.apply(obj, a);
+          return;
+      }
+
+      if (!obj[method]) {
+          throw new Error(method + ' method is not defined');
+      } else {
+          obj[method].apply(obj, a);
+      }
+    }
+
+    // bind
+    if (e.selector) {
+      cb = delegate.bind(el, e.selector, name, cb);
+    } else {
+      events.bind(el, name, cb);
+    }
+
+    // subscription for unbinding
+    this.sub(name, method, cb);
+
+    return cb;
+  };
+
+  if (typeof arg1 == 'string') {
+    bindEvent.apply(this, arguments);
+  } else {
+    for(var key in arg1) {
+      if (arg1.hasOwnProperty(key)) {
+        bindEvent.call(this, key, arg1[key]);
+      }
+    }
+  }
+};
+
+/**
+ * Unbind a single binding, all bindings for `event`,
+ * or all bindings within the manager.
+ *
+ * Examples:
+ *
+ *  Unbind direct handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * Unbind delegate handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * @param {String|Function} [event]
+ * @param {String|Function} [method]
+ * @api public
+ */
+
+Events.prototype.unbind = function(event, method){
+  if (0 == arguments.length) return this.unbindAll();
+  if (1 == arguments.length) return this.unbindAllOf(event);
+
+  // no bindings for this event
+  var bindings = this._events[event];
+  var capture = (forceCaptureEvents.indexOf(event) !== -1);
+  if (!bindings) return;
+
+  // no bindings for this method
+  var cb = bindings[method];
+  if (!cb) return;
+
+  events.unbind(this.el, event, cb, capture);
+};
+
+/**
+ * Unbind all events.
+ *
+ * @api private
+ */
+
+Events.prototype.unbindAll = function(){
+  for (var event in this._events) {
+    this.unbindAllOf(event);
+  }
+};
+
+/**
+ * Unbind all events for `event`.
+ *
+ * @param {String} event
+ * @api private
+ */
+
+Events.prototype.unbindAllOf = function(event){
+  var bindings = this._events[event];
+  if (!bindings) return;
+
+  for (var method in bindings) {
+    this.unbind(event, method);
+  }
+};
+
+/**
+ * Parse `event`.
+ *
+ * @param {String} event
+ * @return {Object}
+ * @api private
+ */
+
+function parse(event) {
+  var parts = event.split(/ +/);
+  return {
+    name: parts.shift(),
+    selector: parts.join(' ')
+  }
+}
+
+},{"component-event":7,"delegate-events":10}],16:[function(require,module,exports){
 /**
  * @module  get-doc
  */
@@ -1206,14 +1475,14 @@ Emitter.prototype.hasListeners = function(event){
 var hasDom = require('has-dom');
 
 module.exports = hasDom() ? document : null;
-},{"has-dom":17}],16:[function(require,module,exports){
+},{"has-dom":18}],17:[function(require,module,exports){
 /** generate unique id for selector */
 var counter = Date.now() % 1e9;
 
 module.exports = function getUid(){
 	return (Math.random() * 1e9 >>> 0) + (counter++);
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 module.exports = function () {
 	return typeof window !== 'undefined'
@@ -1221,7 +1490,48 @@ module.exports = function () {
 		&& typeof document.createElement === 'function';
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+
+/**
+ * Element prototype.
+ */
+
+var proto = Element.prototype;
+
+/**
+ * Vendor function.
+ */
+
+var vendor = proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+/**
+ * Expose `match()`.
+ */
+
+module.exports = match;
+
+/**
+ * Match `el` to `selector`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ * @api public
+ */
+
+function match(el, selector) {
+  if (vendor) return vendor.call(el, selector);
+  var nodes = el.parentNode.querySelectorAll(selector);
+  for (var i = 0; i < nodes.length; ++i) {
+    if (nodes[i] == el) return true;
+  }
+  return false;
+}
+},{}],20:[function(require,module,exports){
 var fakeStyle = require('./fake-element').style;
 var prefix = require('./prefix').dom;
 
@@ -1275,9 +1585,9 @@ function prefixize(name){
 	return '';
 }
 
-},{"./fake-element":19,"./prefix":20}],19:[function(require,module,exports){
+},{"./fake-element":21,"./prefix":22}],21:[function(require,module,exports){
 module.exports = document.createElement('div');
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 //vendor-prefix method, http://davidwalsh.name/vendor-prefix
 var styles = getComputedStyle(document.documentElement, '');
 
@@ -1294,7 +1604,7 @@ module.exports = {
 	css: '-' + pre + '-',
 	js: pre[0].toUpperCase() + pre.substr(1)
 };
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var isString = require('./is-string');
 var isArray = require('./is-array');
 var isFn = require('./is-fn');
@@ -1303,19 +1613,19 @@ var isFn = require('./is-fn');
 module.exports = function (a){
 	return isArray(a) || (a && !isString(a) && !a.nodeType && (typeof window != 'undefined' ? a != window : true) && !isFn(a) && typeof a.length === 'number');
 }
-},{"./is-array":22,"./is-fn":23,"./is-string":24}],22:[function(require,module,exports){
+},{"./is-array":24,"./is-fn":25,"./is-string":26}],24:[function(require,module,exports){
 module.exports = function(a){
 	return a instanceof Array;
 }
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = function(a){
 	return !!(a && a.apply);
 }
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = function(a){
 	return typeof a === 'string' || a instanceof String;
 }
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -1440,10 +1750,10 @@ Overlay.prototype.remove = function(){
 };
 
 
-},{"./template.html":26,"classes":6,"domify":13,"emitter":14,"event":8}],26:[function(require,module,exports){
+},{"./template.html":28,"classes":5,"domify":13,"emitter":14,"event":7}],28:[function(require,module,exports){
 module.exports = "<div class=\"overlay hidden\"></div>\r\n";
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * @module parenthesis
  */
@@ -1451,7 +1761,7 @@ module.exports = {
 	parse: require('./parse'),
 	stringify: require('./stringify')
 };
-},{"./parse":28,"./stringify":29}],28:[function(require,module,exports){
+},{"./parse":30,"./stringify":31}],30:[function(require,module,exports){
 /**
  * @module  parenthesis/parse
  *
@@ -1492,7 +1802,7 @@ module.exports = function(str, bracket){
 
 	return res;
 };
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  * @module parenthesis/stringify
  *
@@ -1531,7 +1841,7 @@ module.exports = function (str, refs, bracket){
 
 	return str;
 };
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  * @module  queried
  */
@@ -1589,7 +1899,7 @@ q.matches = require('./lib/pseudos/matches');
 
 
 module.exports = q;
-},{"./lib/":31,"./lib/pseudos/has":32,"./lib/pseudos/matches":33,"./lib/pseudos/not":34,"./lib/pseudos/root":35,"./lib/pseudos/scope":36,"get-doc":15}],31:[function(require,module,exports){
+},{"./lib/":33,"./lib/pseudos/has":34,"./lib/pseudos/matches":35,"./lib/pseudos/not":36,"./lib/pseudos/root":37,"./lib/pseudos/scope":38,"get-doc":16}],33:[function(require,module,exports){
 /**
  * @module queried/lib/index
  */
@@ -1803,7 +2113,7 @@ querySingle.document = doc;
 
 
 module.exports = querySingle;
-},{"array-unique":4,"arrayify-compact":5,"get-doc":15,"get-uid":16,"mutype/is-array":22,"mutype/is-array-like":21,"mutype/is-string":24,"parenthesis":27,"sliced":37}],32:[function(require,module,exports){
+},{"array-unique":2,"arrayify-compact":3,"get-doc":16,"get-uid":17,"mutype/is-array":24,"mutype/is-array-like":23,"mutype/is-string":26,"parenthesis":29,"sliced":39}],34:[function(require,module,exports){
 var q = require('..');
 
 function has(el, subSelector){
@@ -1811,7 +2121,7 @@ function has(el, subSelector){
 }
 
 module.exports = has;
-},{"..":31}],33:[function(require,module,exports){
+},{"..":33}],35:[function(require,module,exports){
 /** :matches pseudo */
 
 var q = require('..');
@@ -1826,7 +2136,7 @@ function matches(el, selector){
 }
 
 module.exports = matches;
-},{"..":31}],34:[function(require,module,exports){
+},{"..":33}],36:[function(require,module,exports){
 var matches = require('./matches');
 
 function not(el, selector){
@@ -1834,13 +2144,13 @@ function not(el, selector){
 }
 
 module.exports = not;
-},{"./matches":33}],35:[function(require,module,exports){
+},{"./matches":35}],37:[function(require,module,exports){
 var q = require('..');
 
 module.exports = function root(el){
 	return el === q.document.documentElement;
 };
-},{"..":31}],36:[function(require,module,exports){
+},{"..":33}],38:[function(require,module,exports){
 /**
  * :scope pseudo
  * Return element if it has `scoped` attribute.
@@ -1851,10 +2161,10 @@ module.exports = function root(el){
 module.exports = function scope(el){
 	return el.hasAttribute('scoped');
 };
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = exports = require('./lib/sliced');
 
-},{"./lib/sliced":38}],38:[function(require,module,exports){
+},{"./lib/sliced":40}],40:[function(require,module,exports){
 
 /**
  * An Array.prototype.slice.call(arguments) alternative
@@ -1889,7 +2199,7 @@ module.exports = function (args, slice, sliceEnd) {
 }
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -1911,133 +2221,178 @@ function extend(target) {
 },{}],"swiper-fullscreen":[function(require,module,exports){
 'use strict';
 
+var _createClass = function () {
+	function defineProperties(target, props) {
+		for (var i = 0; i < props.length; i++) {
+			var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+		}
+	}return function (Constructor, protoProps, staticProps) {
+		if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	};
+}();
+
+function _classCallCheck(instance, Constructor) {
+	if (!(instance instanceof Constructor)) {
+		throw new TypeError("Cannot call a class as a function");
+	}
+}
+
 var swiper = require('swiper');
 var dialog = require('dialog-component');
 var extend = require('xtend/mutable');
 var domify = require('domify');
 var css = require('mucss/css');
-var sliderHTML = require('./index.html');
-var itemHTML = require('./item.html');
 var q = require('queried');
+var events = require('events-mixin');
+
+var SWIPER_DEFAULTS = {
+	loop: true,
+	effect: 'fade',
+	speed: 200,
+	lazyLoading: true,
+	preloadImages: false,
+	lazyLoadingOnTransitionStart: true,
+	keyboardControl: true
+};
 
 /**
  * Create an instance of fullscreen swiper
  * @constructor
  * @param {Object} options Initialization options
  */
-function SwiperFullscreen(options) {
-	var _this = this;
 
-	if (!(this instanceof SwiperFullscreen)) return new SwiperFullscreen(options);
+var SwiperFullscreen = function () {
+	function SwiperFullscreen(options) {
+		_classCallCheck(this, SwiperFullscreen);
 
-	extend(this, options);
+		extend(this, {
+			data: [],
+			navigation: true,
+			swiperOptions: SWIPER_DEFAULTS
+		}, options);
 
-	if (options.swiper) {
-		this.swiper = Object.create(SwiperFullscreen.prototype.swiper);
-		extend(this.swiper, options.swiper);
+		var markup = this.getMarkup(this.data);
+		this.el = domify(markup);
+		this.swiper = new Swiper(q('.swiper-container', this.el), this.swiperOptions);
+		this.bindEvents();
 	}
 
-	this.el = domify(sliderHTML);
-
-	//create and append slides
-	this.data.forEach(function (itemData) {
-		var item = _this.render(itemData);
-		_this.el.querySelector('.swiper-wrapper').appendChild(item);
-	});
-
-	if (this.navigation && this.data.length > 1) {
-		this.appendNavigation();
-	}
-
-	//create swiper instance for the gallery
-	this.swiper = new Swiper(q('.swiper-container', this.el), this.swiper);
-}
-
-extend(SwiperFullscreen.prototype, {
-
-	data: [],
-	navigation: true,
-
-	swiper: {
-		loop: true,
-		effect: 'fade',
-		speed: 200,
-		lazyLoading: true,
-		preloadImages: false,
-		lazyLoadingOnTransitionStart: true,
-		keyboardControl: true
-	},
-
-	/**
-  * show the dialog with instance slider
-  * @param  {Number} slideIndex Index of slide to show when opened
-  */
-	show: function show(slideIndex) {
-
-		//prepare and open dialog with swiper
-		this.dialog = dialog(null, this.el).effect('fade').overlay().fixed().closable().escapable().addClass('dialog-slider-fullscreen').on('show', function () {
-			css(document.body, {
-				'overflow': 'hidden'
-			});
-		}).on('close', closeDialog).on('hide', closeDialog).on('escape', closeDialog).show();
-
-		function closeDialog() {
-			css(document.body, {
-				'overflow': null
+	_createClass(SwiperFullscreen, [{
+		key: 'bindEvents',
+		value: function bindEvents() {
+			this.events = events(this.el, this);
+			this.events.bind({
+				'click .swiper-button-prev': 'prevSlide',
+				'click .swiper-button-next': 'nextSlide'
 			});
 		}
 
-		this.swiper.update();
-		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
-	},
+		/**
+   * get markup of the slider
+   * @param  {Object} data - data to render
+   * @return {String}      - html string
+   */
 
-	/**
-  * hide the instanse's dialog
-  */
-	hide: function hide() {
-		this.dialog && this.dialog.hide();
-	},
+	}, {
+		key: 'getMarkup',
+		value: function getMarkup(data) {
+			var items = this.getItemsMarkup(data);
+			var navigation = this.getNavigationMarkup(data);
 
-	/**
-  * render slide item with data provided
-  * @param  {Object} data - data to be rendered
-  * @return {DomObject}      Slide DOM element
-  */
-	render: function render(data) {
-		data.title = data.title || '';
-		return domify(itemHTML.replace("%src%", data.src).replace("%title%", data.title));
-	},
+			return '\n\t\t\t<div class="fs-swiper">\n\t\t\t\t<div class="swiper-container fs-swiper-container">\n\t\t\t\t\t<div class="swiper-wrapper">' + items + '</div>\n\t\t\t\t\t<div class="swiper-button-fullscreen"></div>\n\t\t\t\t\t' + navigation + '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t';
+		}
 
-	/**
-  * Method describing how navigation is appended
-  */
-	appendNavigation: function appendNavigation() {
-		var _this2 = this;
+		/**
+   * get items list markup
+   * @param  {Object} data - data to render
+   * @return {String}      - html string
+   */
 
-		//create elements for nav buttons
-		var prevArrow = document.createElement('div');
-		prevArrow.className = 'swiper-button-prev';
-		var nextArrow = document.createElement('div');
-		nextArrow.className = 'swiper-button-next';
+	}, {
+		key: 'getItemsMarkup',
+		value: function getItemsMarkup(data) {
+			return data.reduce(function (prev, curr) {
+				return prev + ('\n\t\t\t\t<div class="swiper-slide fs-swiper-slide">\n\t\t\t\t\t<img class="fs-swiper-image swiper-lazy" data-src="' + curr.src + '" />\n\t\t\t\t\t<div class="fs-swiper-caption">\n\t\t\t\t\t\t' + (curr.title || '') + '\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>\n\t\t\t\t</div>\n\t\t\t');
+			}, '');
+		}
 
-		//bind click events
-		prevArrow.addEventListener('click', function () {
-			return _this2.swiper.slidePrev();
-		});
-		nextArrow.addEventListener('click', function () {
-			return _this2.swiper.slideNext();
-		});
+		/**
+   * Get navigation markup if more than one slide
+   * @return {String}      - html string
+   */
 
-		//append the buttons
-		var container = q('.swiper-container', this.el);
-		container.appendChild(prevArrow);
-		container.appendChild(nextArrow);
-	}
-});
+	}, {
+		key: 'getNavigationMarkup',
+		value: function getNavigationMarkup(data) {
+			if (this.navigation && data.length > 1) {
+				return '\n\t\t\t\t<div class="swiper-button-prev"></div>\n\t\t\t\t<div class="swiper-button-next"></div>\n\t\t\t';
+			}
+
+			return '';
+		}
+
+		/**
+   * show the dialog with instance slider
+   * @param {Number} slideIndex Index of slide to show when opened
+   */
+
+	}, {
+		key: 'show',
+		value: function show(slideIndex) {
+			this.dialog = dialog(null, this.el).effect('fade').overlay().fixed().closable().escapable().addClass('dialog-slider-fullscreen').on('show', function () {
+				css(document.body, {
+					'overflow': 'hidden'
+				});
+			}).on('close', closeDialog).on('hide', closeDialog).on('escape', closeDialog).show();
+
+			this.swiper.update();
+			if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
+
+			// TODO: move it to instanse's method
+			function closeDialog() {
+				css(document.body, {
+					'overflow': null
+				});
+			}
+		}
+
+		/**
+   * hide the instance's dialog
+   */
+
+	}, {
+		key: 'hide',
+		value: function hide() {
+			this.dialog && this.dialog.hide();
+		}
+
+		/**
+   * go to previous slide
+   */
+
+	}, {
+		key: 'prevSlide',
+		value: function prevSlide() {
+			this.swiper.slidePrev();
+		}
+
+		/**
+   * go to next slide
+   */
+
+	}, {
+		key: 'nextSlide',
+		value: function nextSlide() {
+			this.swiper.slideNext();
+		}
+	}]);
+
+	return SwiperFullscreen;
+}();
 
 module.exports = SwiperFullscreen;
 
-},{"./index.html":1,"./item.html":2,"dialog-component":11,"domify":13,"mucss/css":18,"queried":30,"swiper":"swiper","xtend/mutable":39}],"swiper":[function(require,module,exports){
+},{"dialog-component":11,"domify":13,"events-mixin":15,"mucss/css":20,"queried":32,"swiper":"swiper","xtend/mutable":41}],"swiper":[function(require,module,exports){
 /**
  * Swiper 3.0.4
  * Most modern mobile touch slider and framework with hardware accelerated transitions
