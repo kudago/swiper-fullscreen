@@ -1,840 +1,167 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = "<div class=\"fs-swiper\">\n\t<div class=\"swiper-container fs-swiper-container\">\n\t\t<div class=\"swiper-wrapper\"></div>\n\t\t<div class=\"swiper-button-fullscreen\"></div>\n\t</div>\n</div>\n";
+module.exports = "module.exports = \"<div class=\\\"fs-swiper\\\">\\n\\t<div class=\\\"swiper-container fs-swiper-container\\\">\\n\\t\\t<div class=\\\"swiper-wrapper\\\"></div>\\n\\t\\t<div class=\\\"swiper-button-fullscreen\\\"></div>\\n\\t</div>\\n</div>\\n\";\n";
 
 },{}],2:[function(require,module,exports){
-module.exports = "<div class=\"swiper-slide fs-swiper-slide\">\n\t<img\n\t\tclass=\"fs-swiper-image swiper-lazy\"\n\t\tdata-src=\"%src%\"\n\t\t/>\n\t<div class=\"fs-swiper-caption\">\n\t\t%title%\n\t</div>\n\t<div class=\"swiper-lazy-preloader swiper-lazy-preloader-white\"></div>\n</div>";
+module.exports = "module.exports = \"<div class=\\\"swiper-slide fs-swiper-slide\\\">\\n\\t<img\\n\\t\\tclass=\\\"fs-swiper-image swiper-lazy\\\"\\n\\t\\tdata-src=\\\"%src%\\\"\\n\\t\\t/>\\n\\t<div class=\\\"fs-swiper-caption\\\">\\n\\t\\t%title%\\n\\t</div>\\n\\t<div class=\\\"swiper-lazy-preloader swiper-lazy-preloader-white\\\"></div>\\n</div>\";\n";
 
 },{}],3:[function(require,module,exports){
+'use strict'
 
 /**
- * Module dependencies.
+ * Expose `arrayFlatten`.
  */
-
-var Emitter = require('emitter')
-  , overlay = require('overlay')
-  , domify = require('domify')
-  , events = require('event')
-  , classes = require('classes')
-  , query = require('query');
+module.exports = flatten
+module.exports.from = flattenFrom
+module.exports.depth = flattenDepth
+module.exports.fromDepth = flattenFromDepth
 
 /**
- * Active dialog.
- */
-
-var active;
-
-/**
- * Expose `dialog()`.
- */
-
-exports = module.exports = dialog;
-
-/**
- * Expose `Dialog`.
- */
-
-exports.Dialog = Dialog;
-
-/**
- * Return a new `Dialog` with the given
- * (optional) `title` and `msg`.
+ * Flatten an array.
  *
- * @param {String} title or msg
- * @param {String} msg
- * @return {Dialog}
- * @api public
- */
-
-function dialog(title, msg){
-  switch (arguments.length) {
-    case 2:
-      return new Dialog({ title: title, message: msg });
-    case 1:
-      return new Dialog({ message: title });
-  }
-};
-
-/**
- * Initialize a new `Dialog`.
- *
- * Options:
- *
- *    - `title` dialog title
- *    - `message` a message to display
- *
- * Emits:
- *
- *    - `show` when visible
- *    - `hide` when hidden
- *
- * @param {Object} options
- * @api public
- */
-
-function Dialog(options) {
-  Emitter.call(this);
-  options = options || {};
-  this.template = require('./template.html');
-  this.el = domify(this.template);
-  this._classes = classes(this.el);
-  this.render(options);
-  if (active && !active.hiding) active.hide();
-  if (exports.effect) this.effect(exports.effect);
-
-  active = this;
-  this.on('escape', function(){
-    active.hide();
-  });
-};
-
-/**
- * Inherit from `Emitter.prototype`.
- */
-
-Dialog.prototype = new Emitter;
-
-/**
- * Render with the given `options`.
- *
- * @param {Object} options
- * @api public
- */
-
-Dialog.prototype.render = function(options){
-  var self = this
-    , el = self.el
-    , title = options.title
-    , titleEl = query('.title', el)
-    , pEl = query('p', el)
-    , msg = options.message;
-
-  events.bind(query('.close', el), 'click', function (ev) {
-    ev.preventDefault();
-    self.emit('close');
-    self.hide();
-  });
-
-  if (titleEl) {
-    if (!title) {
-      titleEl.parentNode.removeChild(titleEl);
-    } else {
-      titleEl.textContent = title;
-    }
-  }
-
-  // message
-  if ('string' == typeof msg) {
-    pEl.textContent = msg;
-  } else if (msg) {
-    pEl.parentNode.insertBefore(msg.el || msg, pEl);
-    pEl.parentNode.removeChild(pEl);
-  }
-};
-
-/**
- * Enable the dialog close link.
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.closable = function(){
-  return this.addClass('closable');
-};
-
-/**
- * Add class `name`.
- *
- * @param {String} name
- * @return {Dialog}
- * @api public
- */
-
-Dialog.prototype.addClass = function(name){
-  this._classes.add(name);
-  return this;
-};
-
-/**
- * Set the effect to `type`.
- *
- * @param {String} type
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.effect = function(type){
-  this._effect = type;
-  this.addClass(type);
-  return this;
-};
-
-/**
- * Make it modal!
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.modal = function(){
-  this._overlay = overlay();
-  return this;
-};
-
-/**
- * Add an overlay.
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.overlay = function(opts){
-  var self = this;
-  opts = opts || { closable: true };
-  var o = overlay(opts);
-  o.on('hide', function(){
-    self._overlay = null;
-    self.hide();
-  });
-  this._overlay = o;
-  return this;
-};
-
-/**
- * Close the dialog when the escape key is pressed.
- *
- * @api public
- */
-
-Dialog.prototype.escapable = function(){
-  var self = this;
-  // Save reference to remove listener later
-  self._escKeyCallback = self._escKeyCallback || function (e) {
-    e.which = e.which || e.keyCode;
-    if (27 !== e.which) return;
-    self.emit('escape');
-  };
-  events.bind(document, 'keydown', self._escKeyCallback);
-  return this;
-};
-
-/**
- * Fixed dialogs position can be manipulated through CSS.
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.fixed = function(){
-  this._fixed = true;
-  return this;
-}
-
-/**
- * Show the dialog.
- *
- * Emits "show" event.
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.show = function(){
-  var overlay = this._overlay;
-  var self = this;
-
-  // overlay
-  if (overlay) {
-    overlay.show();
-    this._classes.add('modal');
-  }
-
-  // escape
-  if (!overlay || overlay.closable) this.escapable();
-
-  // position
-  document.body.appendChild(this.el);
-  this._classes.remove('hide');
-  this.emit('show');
-  return this;
-};
-
-/**
- * Hide the overlay.
- *
- * @api private
- */
-
-Dialog.prototype.hideOverlay = function(){
-  if (!this._overlay) return;
-  this._overlay.remove();
-  this._overlay = null;
-};
-
-/**
- * Hide the dialog with optional delay of `ms`,
- * otherwise the dialog is removed immediately.
- *
- * Emits "hide" event.
- *
- * @return {Number} ms
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.hide = function(ms){
-  var self = this;
-
-  if (self._escKeyCallback) {
-    events.unbind(document, 'keydown', self._escKeyCallback);
-  }
-
-  // prevent thrashing - this isn't used
-  self.hiding = true;
-
-  // duration
-  if (ms) {
-    setTimeout(function(){
-      self.hide();
-    }, ms);
-    return self;
-  }
-
-  // hide / remove
-  self._classes.add('hide');
-  if (self._effect) {
-    setTimeout(function(){
-      self.remove();
-    }, 500);
-  } else {
-    self.remove();
-  }
-
-  // overlay
-  self.hideOverlay();
-
-  return self;
-};
-/**
- * Hide the dialog without potential animation.
- *
- * @return {Dialog} for chaining
- * @api public
- */
-
-Dialog.prototype.remove = function(){
-  if (this.el.parentNode) {
-    this.emit('hide');
-    this.el.parentNode.removeChild(this.el);
-  }
-  return this;
-};
-
-},{"./template.html":14,"classes":4,"domify":15,"emitter":6,"event":7,"overlay":8,"query":13}],4:[function(require,module,exports){
-/**
- * Module dependencies.
- */
-
-var index = require('indexof');
-
-/**
- * Whitespace regexp.
- */
-
-var re = /\s+/;
-
-/**
- * toString reference.
- */
-
-var toString = Object.prototype.toString;
-
-/**
- * Wrap `el` in a `ClassList`.
- *
- * @param {Element} el
- * @return {ClassList}
- * @api public
- */
-
-module.exports = function(el){
-  return new ClassList(el);
-};
-
-/**
- * Initialize a new ClassList for `el`.
- *
- * @param {Element} el
- * @api private
- */
-
-function ClassList(el) {
-  if (!el) throw new Error('A DOM element reference is required');
-  this.el = el;
-  this.list = el.classList;
-}
-
-/**
- * Add class `name` if not already present.
- *
- * @param {String} name
- * @return {ClassList}
- * @api public
- */
-
-ClassList.prototype.add = function(name){
-  // classList
-  if (this.list) {
-    this.list.add(name);
-    return this;
-  }
-
-  // fallback
-  var arr = this.array();
-  var i = index(arr, name);
-  if (!~i) arr.push(name);
-  this.el.className = arr.join(' ');
-  return this;
-};
-
-/**
- * Remove class `name` when present, or
- * pass a regular expression to remove
- * any which match.
- *
- * @param {String|RegExp} name
- * @return {ClassList}
- * @api public
- */
-
-ClassList.prototype.remove = function(name){
-  if ('[object RegExp]' == toString.call(name)) {
-    return this.removeMatching(name);
-  }
-
-  // classList
-  if (this.list) {
-    this.list.remove(name);
-    return this;
-  }
-
-  // fallback
-  var arr = this.array();
-  var i = index(arr, name);
-  if (~i) arr.splice(i, 1);
-  this.el.className = arr.join(' ');
-  return this;
-};
-
-/**
- * Remove all classes matching `re`.
- *
- * @param {RegExp} re
- * @return {ClassList}
- * @api private
- */
-
-ClassList.prototype.removeMatching = function(re){
-  var arr = this.array();
-  for (var i = 0; i < arr.length; i++) {
-    if (re.test(arr[i])) {
-      this.remove(arr[i]);
-    }
-  }
-  return this;
-};
-
-/**
- * Toggle class `name`.
- *
- * @param {String} name
- * @return {ClassList}
- * @api public
- */
-
-ClassList.prototype.toggle = function(name){
-  // classList
-  if (this.list) {
-    this.list.toggle(name);
-    return this;
-  }
-
-  // fallback
-  if (this.has(name)) {
-    this.remove(name);
-  } else {
-    this.add(name);
-  }
-  return this;
-};
-
-/**
- * Return an array of classes.
- *
+ * @param  {Array} array
  * @return {Array}
- * @api public
+ */
+function flatten (array) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected value to be an array')
+  }
+
+  return flattenFrom(array)
+}
+
+/**
+ * Flatten an array-like structure.
+ *
+ * @param  {Array} array
+ * @return {Array}
+ */
+function flattenFrom (array) {
+  return flattenDown(array, [], Infinity)
+}
+
+/**
+ * Flatten an array-like structure with depth.
+ *
+ * @param  {Array}  array
+ * @param  {number} depth
+ * @return {Array}
+ */
+function flattenDepth (array, depth) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected value to be an array')
+  }
+
+  return flattenFromDepth(array, depth)
+}
+
+/**
+ * Flatten an array-like structure with depth.
+ *
+ * @param  {Array}  array
+ * @param  {number} depth
+ * @return {Array}
+ */
+function flattenFromDepth (array, depth) {
+  if (typeof depth !== 'number') {
+    throw new TypeError('Expected the depth to be a number')
+  }
+
+  return flattenDownDepth(array, [], depth)
+}
+
+/**
+ * Flatten an array indefinitely.
+ *
+ * @param  {Array} array
+ * @param  {Array} result
+ * @return {Array}
+ */
+function flattenDown (array, result) {
+  for (var i = 0; i < array.length; i++) {
+    var value = array[i]
+
+    if (Array.isArray(value)) {
+      flattenDown(value, result)
+    } else {
+      result.push(value)
+    }
+  }
+
+  return result
+}
+
+/**
+ * Flatten an array with depth.
+ *
+ * @param  {Array}  array
+ * @param  {Array}  result
+ * @param  {number} depth
+ * @return {Array}
+ */
+function flattenDownDepth (array, result, depth) {
+  depth--
+
+  for (var i = 0; i < array.length; i++) {
+    var value = array[i]
+
+    if (depth > -1 && Array.isArray(value)) {
+      flattenDownDepth(value, result, depth)
+    } else {
+      result.push(value)
+    }
+  }
+
+  return result
+}
+
+},{}],4:[function(require,module,exports){
+/*!
+ * array-unique <https://github.com/jonschlinkert/array-unique>
+ *
+ * Copyright (c) 2014 Jon Schlinkert, contributors.
+ * Licensed under the MIT license.
  */
 
-ClassList.prototype.array = function(){
-  var str = this.el.className.replace(/^\s+|\s+$/g, '');
-  var arr = str.split(re);
-  if ('' === arr[0]) arr.shift();
+'use strict';
+
+module.exports = function unique(arr) {
+  if (!Array.isArray(arr)) {
+    throw new TypeError('array-unique expects an array.');
+  }
+
+  var len = arr.length;
+  var i = -1;
+
+  while (i++ < len) {
+    var j = i + 1;
+
+    for (; j < arr.length; ++j) {
+      if (arr[i] === arr[j]) {
+        arr.splice(j--, 1);
+      }
+    }
+  }
   return arr;
 };
 
-/**
- * Check if class `name` is present.
+},{}],5:[function(require,module,exports){
+/*!
+ * arrayify-compact <https://github.com/jonschlinkert/arrayify-compact>
  *
- * @param {String} name
- * @return {ClassList}
- * @api public
+ * Copyright (c) 2014 Jon Schlinkert, contributors.
+ * Licensed under the MIT License
  */
 
-ClassList.prototype.has =
-ClassList.prototype.contains = function(name){
-  return this.list
-    ? this.list.contains(name)
-    : !! ~index(this.array(), name);
+'use strict';
+
+var flatten = require('array-flatten');
+
+module.exports = function(arr) {
+  return flatten(!Array.isArray(arr) ? [arr] : arr)
+    .filter(Boolean);
 };
 
-},{"indexof":5}],5:[function(require,module,exports){
-
-var indexOf = [].indexOf;
-
-module.exports = function(arr, obj){
-  if (indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
-    if (arr[i] === obj) return i;
-  }
-  return -1;
-};
-},{}],6:[function(require,module,exports){
-
-/**
- * Expose `Emitter`.
- */
-
-module.exports = Emitter;
-
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks[event] = this._callbacks[event] || [])
-    .push(fn);
-  return this;
-};
-
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.once = function(event, fn){
-  var self = this;
-  this._callbacks = this._callbacks || {};
-
-  function on() {
-    self.off(event, on);
-    fn.apply(this, arguments);
-  }
-
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-
-  // all
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-
-  // specific event
-  var callbacks = this._callbacks[event];
-  if (!callbacks) return this;
-
-  // remove all handlers
-  if (1 == arguments.length) {
-    delete this._callbacks[event];
-    return this;
-  }
-
-  // remove specific handler
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks[event];
-
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-
-  return this;
-};
-
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks[event] || [];
-};
-
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-
-},{}],7:[function(require,module,exports){
-
-/**
- * Bind `el` event `type` to `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.bind = function(el, type, fn, capture){
-  if (el.addEventListener) {
-    el.addEventListener(type, fn, capture);
-  } else {
-    el.attachEvent('on' + type, fn);
-  }
-  return fn;
-};
-
-/**
- * Unbind `el` event `type`'s callback `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.unbind = function(el, type, fn, capture){
-  if (el.removeEventListener) {
-    el.removeEventListener(type, fn, capture);
-  } else {
-    el.detachEvent('on' + type, fn);
-  }
-  return fn;
-};
-
-},{}],8:[function(require,module,exports){
-
-/**
- * Module dependencies.
- */
-
-var Emitter = require('emitter');
-var tmpl = require('./template.html');
-var domify = require('domify');
-var event = require('event');
-var classes = require('classes');
-
-/**
- * Expose `overlay()`.
- */
-
-exports = module.exports = overlay;
-
-/**
- * Expose `Overlay`.
- */
-
-exports.Overlay = Overlay;
-
-/**
- * Return a new `Overlay` with the given `options`.
- *
- * @param {Object|Element} options
- * @return {Overlay}
- * @api public
- */
-
-function overlay(options){
-  options = options || {};
-
-  // element
-  if (options.nodeName) {
-    options = { target: options };
-  }
-
-  return new Overlay(options);
-}
-
-/**
- * Initialize a new `Overlay`.
- *
- * @param {Object} options
- * @api public
- */
-
-function Overlay(options) {
-  Emitter.call(this);
-  options = options || {};
-  this.target = options.target || document.body;
-  this.closable = options.closable;
-  this.el = domify(tmpl);
-  this.target.appendChild(this.el);
-  if (this.closable) {
-	event.bind(this.el, 'click', this.hide.bind(this));
-    classes(this.el).add('closable');
-  }
-}
-
-/**
- * Mixin emitter.
- */
-
-Emitter(Overlay.prototype);
-
-/**
- * Show the overlay.
- *
- * Emits "show" event.
- *
- * @return {Overlay}
- * @api public
- */
-
-Overlay.prototype.show = function(){
-  this.emit('show');
-  classes(this.el).remove('hidden');
-  return this;
-};
-
-/**
- * Hide the overlay.
- *
- * Emits "hide" event.
- *
- * @return {Overlay}
- * @api public
- */
-
-Overlay.prototype.hide = function(){
-  this.emit('hide');
-  return this.remove();
-};
-
-/**
- * Hide the overlay without emitting "hide".
- *
- * Emits "close" event.
- *
- * @return {Overlay}
- * @api public
- */
-
-Overlay.prototype.remove = function(){
-  var self = this;
-  this.emit('close');
-  classes(this.el).add('hidden');
-  setTimeout(function(){
-    self.target.removeChild(self.el);
-  }, 350);
-  return this;
-};
-
-
-},{"./template.html":12,"classes":9,"domify":15,"emitter":6,"event":11}],9:[function(require,module,exports){
+},{"array-flatten":3}],6:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -1023,15 +350,170 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-},{"indexof":10}],10:[function(require,module,exports){
-module.exports = function(arr, obj){
-  if (arr.indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
-    if (arr[i] === obj) return i;
-  }
-  return -1;
+},{"indexof":9}],7:[function(require,module,exports){
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
 };
-},{}],11:[function(require,module,exports){
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  function on() {
+    this.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks['$' + event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks['$' + event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks['$' + event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks['$' + event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+},{}],8:[function(require,module,exports){
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1067,11 +549,15 @@ exports.unbind = function(el, type, fn, capture){
   el[unbind](prefix + type, fn, capture || false);
   return fn;
 };
-},{}],12:[function(require,module,exports){
-module.exports = "<div class=\"overlay hidden\"></div>\n";
-
-},{}],13:[function(require,module,exports){
-
+},{}],9:[function(require,module,exports){
+module.exports = function(arr, obj){
+  if (arr.indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],10:[function(require,module,exports){
 function one(selector, el) {
   return el.querySelector(selector);
 }
@@ -1091,12 +577,348 @@ exports.engine = function(obj){
   if (!obj.all) throw new Error('.all callback required');
   one = obj.one;
   exports.all = obj.all;
+  return exports;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+
+/**
+ * Module dependencies.
+ */
+
+var Emitter = require('emitter')
+  , overlay = require('overlay')
+  , domify = require('domify')
+  , events = require('event')
+  , classes = require('classes')
+  , query = require('query');
+
+/**
+ * Active dialog.
+ */
+
+var active;
+
+/**
+ * Expose `dialog()`.
+ */
+
+exports = module.exports = dialog;
+
+/**
+ * Expose `Dialog`.
+ */
+
+exports.Dialog = Dialog;
+
+/**
+ * Return a new `Dialog` with the given
+ * (optional) `title` and `msg`.
+ *
+ * @param {String} title or msg
+ * @param {String} msg
+ * @return {Dialog}
+ * @api public
+ */
+
+function dialog(title, msg){
+  switch (arguments.length) {
+    case 2:
+      return new Dialog({ title: title, message: msg });
+    case 1:
+      return new Dialog({ message: title });
+  }
+};
+
+/**
+ * Initialize a new `Dialog`.
+ *
+ * Options:
+ *
+ *    - `title` dialog title
+ *    - `message` a message to display
+ *
+ * Emits:
+ *
+ *    - `show` when visible
+ *    - `hide` when hidden
+ *
+ * @param {Object} options
+ * @api public
+ */
+
+function Dialog(options) {
+  Emitter.call(this);
+  options = options || {};
+  this.template = require('./template.html');
+  this.el = domify(this.template);
+  this._classes = classes(this.el);
+  this.render(options);
+  if (active && !active.hiding) active.hide();
+  if (exports.effect) this.effect(exports.effect);
+
+  active = this;
+  this.on('escape', function(){
+    active.hide();
+  });
+};
+
+/**
+ * Inherit from `Emitter.prototype`.
+ */
+
+Dialog.prototype = new Emitter;
+
+/**
+ * Render with the given `options`.
+ *
+ * @param {Object} options
+ * @api public
+ */
+
+Dialog.prototype.render = function(options){
+  var self = this
+    , el = self.el
+    , title = options.title
+    , titleEl = query('.title', el)
+    , pEl = query('p', el)
+    , msg = options.message;
+
+  events.bind(query('.close', el), 'click', function (ev) {
+    ev.preventDefault();
+    self.emit('close');
+    self.hide();
+  });
+
+  if (titleEl) {
+    if (!title) {
+      titleEl.parentNode.removeChild(titleEl);
+    } else {
+      titleEl.textContent = title;
+    }
+  }
+
+  // message
+  if ('string' == typeof msg) {
+    pEl.textContent = msg;
+  } else if (msg) {
+    pEl.parentNode.insertBefore(msg.el || msg, pEl);
+    pEl.parentNode.removeChild(pEl);
+  }
+};
+
+/**
+ * Enable the dialog close link.
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.closable = function(){
+  return this.addClass('closable');
+};
+
+/**
+ * Add class `name`.
+ *
+ * @param {String} name
+ * @return {Dialog}
+ * @api public
+ */
+
+Dialog.prototype.addClass = function(name){
+  this._classes.add(name);
+  return this;
+};
+
+/**
+ * Set the effect to `type`.
+ *
+ * @param {String} type
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.effect = function(type){
+  this._effect = type;
+  this.addClass(type);
+  return this;
+};
+
+/**
+ * Make it modal!
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.modal = function(){
+  this.overlay();
+  return this;
+};
+
+/**
+ * Add an overlay.
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.overlay = function(opts){
+  this._overlayOptions = opts || { closable: true };
+  return this;
+};
+
+/**
+ * Close the dialog when the escape key is pressed.
+ *
+ * @api public
+ */
+
+Dialog.prototype.escapable = function(){
+  var self = this;
+  // Save reference to remove listener later
+  self._escKeyCallback = self._escKeyCallback || function (e) {
+    e.which = e.which || e.keyCode;
+    if (27 !== e.which) return;
+    self.emit('escape');
+  };
+  events.bind(document, 'keydown', self._escKeyCallback);
+  return this;
+};
+
+/**
+ * Fixed dialogs position can be manipulated through CSS.
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.fixed = function(){
+  this._fixed = true;
+  return this;
+}
+
+/**
+ * Show the dialog.
+ *
+ * Emits "show" event.
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.show = function(){
+  var overlay = this._overlay;
+
+  // overlay
+  this.showOverlay();
+
+  // escape
+  if (!overlay || overlay.closable) this.escapable();
+
+  // position
+  document.body.appendChild(this.el);
+  this._classes.remove('hide');
+  this.emit('show');
+  return this;
+};
+
+/**
+ * Hide the overlay.
+ *
+ * @api private
+ */
+
+Dialog.prototype.hideOverlay = function(){
+  if (!this._overlay) return;
+  this._overlay.off('hide');
+  this._overlay.hide();
+  this._overlay = null;
+};
+
+/**
+ * Show the overlay.
+ *
+ * @api private
+ */
+
+Dialog.prototype.showOverlay = function(){
+  var self = this;
+
+  if (!self._overlayOptions) return;
+  self._overlay = overlay(self._overlayOptions)
+    .once('hide', function(){
+      self._overlay = null;
+      self.hide();
+    })
+    .show();
+  self._classes.add('modal');
+};
+
+/**
+ * Hide the dialog with optional delay of `ms`,
+ * otherwise the dialog is removed immediately.
+ *
+ * Emits "hide" event.
+ *
+ * @return {Number} ms
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.hide = function(ms){
+  var self = this;
+
+  if (self._escKeyCallback) {
+    events.unbind(document, 'keydown', self._escKeyCallback);
+  }
+
+  // prevent thrashing
+  self.hiding = true;
+
+  // duration
+  if (ms) {
+    setTimeout(function(){
+      self.hide();
+    }, ms);
+    return self;
+  }
+
+  // hide / remove
+  self._classes.add('hide');
+  if (self._effect) {
+    setTimeout(function(){
+      self.remove();
+    }, 500);
+  } else {
+    self.remove();
+  }
+
+  // overlay
+  self.hideOverlay();
+
+  return self;
+};
+/**
+ * Hide the dialog without potential animation.
+ *
+ * @return {Dialog} for chaining
+ * @api public
+ */
+
+Dialog.prototype.remove = function(){
+  if (this.el.parentNode) {
+    this.emit('hide');
+    this.el.parentNode.removeChild(this.el);
+  }
+  return this;
+};
+
+},{"./template.html":12,"classes":6,"domify":13,"emitter":7,"event":8,"overlay":25,"query":10}],12:[function(require,module,exports){
 module.exports = "<div class=\"dialog hide\">\n  <div class=\"content\">\n    <span class=\"title\">Title</span>\n    <a href=\"#\" class=\"close\">&times;<em>close</em></a>\n    <div class=\"body\">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n";
 
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 /**
  * Expose `parse`.
@@ -1108,13 +930,17 @@ module.exports = parse;
  * Tests for browser support.
  */
 
-var div = document.createElement('div');
-// Setup
-div.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
-// Make sure that link elements get serialized correctly by innerHTML
-// This requires a wrapper element in IE
-var innerHTMLBug = !div.getElementsByTagName('link').length;
-div = undefined;
+var innerHTMLBug = false;
+var bugTestDiv;
+if (typeof document !== 'undefined') {
+  bugTestDiv = document.createElement('div');
+  // Setup
+  bugTestDiv.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
+  // Make sure that link elements get serialized correctly by innerHTML
+  // This requires a wrapper element in IE
+  innerHTMLBug = !bugTestDiv.getElementsByTagName('link').length;
+  bugTestDiv = undefined;
+}
 
 /**
  * Wrap map from jquery.
@@ -1206,7 +1032,196 @@ function parse(html, doc) {
   return fragment;
 }
 
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks[event] = this._callbacks[event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  var self = this;
+  this._callbacks = this._callbacks || {};
+
+  function on() {
+    self.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks[event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks[event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks[event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks[event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+},{}],15:[function(require,module,exports){
+/**
+ * @module  get-doc
+ */
+
+var hasDom = require('has-dom');
+
+module.exports = hasDom() ? document : null;
+},{"has-dom":17}],16:[function(require,module,exports){
+/** generate unique id for selector */
+var counter = Date.now() % 1e9;
+
+module.exports = function getUid(){
+	return (Math.random() * 1e9 >>> 0) + (counter++);
+};
+},{}],17:[function(require,module,exports){
+'use strict';
+module.exports = function () {
+	return typeof window !== 'undefined'
+		&& typeof document !== 'undefined'
+		&& typeof document.createElement === 'function';
+};
+
+},{}],18:[function(require,module,exports){
 var fakeStyle = require('./fake-element').style;
 var prefix = require('./prefix').dom;
 
@@ -1260,9 +1275,9 @@ function prefixize(name){
 	return '';
 }
 
-},{"./fake-element":17,"./prefix":18}],17:[function(require,module,exports){
+},{"./fake-element":19,"./prefix":20}],19:[function(require,module,exports){
 module.exports = document.createElement('div');
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 //vendor-prefix method, http://davidwalsh.name/vendor-prefix
 var styles = getComputedStyle(document.documentElement, '');
 
@@ -1279,11 +1294,246 @@ module.exports = {
 	css: '-' + pre + '-',
 	js: pre[0].toUpperCase() + pre.substr(1)
 };
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
+var isString = require('./is-string');
+var isArray = require('./is-array');
+var isFn = require('./is-fn');
+
+//FIXME: add tests from http://jsfiddle.net/ku9LS/1/
+module.exports = function (a){
+	return isArray(a) || (a && !isString(a) && !a.nodeType && (typeof window != 'undefined' ? a != window : true) && !isFn(a) && typeof a.length === 'number');
+}
+},{"./is-array":22,"./is-fn":23,"./is-string":24}],22:[function(require,module,exports){
+module.exports = function(a){
+	return a instanceof Array;
+}
+},{}],23:[function(require,module,exports){
+module.exports = function(a){
+	return !!(a && a.apply);
+}
+},{}],24:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'string' || a instanceof String;
+}
+},{}],25:[function(require,module,exports){
+
 /**
- * @module  queried/css4
+ * Module dependencies.
+ */
+
+var Emitter = require('emitter');
+var tmpl = require('./template.html');
+var domify = require('domify');
+var event = require('event');
+var classes = require('classes');
+
+/**
+ * Expose `overlay()`.
+ */
+
+exports = module.exports = overlay;
+
+/**
+ * Expose `Overlay`.
+ */
+
+exports.Overlay = Overlay;
+
+/**
+ * Return a new `Overlay` with the given `options`.
  *
- * CSS4 query selector.
+ * @param {Object|Element} options
+ * @return {Overlay}
+ * @api public
+ */
+
+function overlay(options){
+  options = options || {};
+
+  // element
+  if (options.nodeName) {
+    options = { target: options };
+  }
+
+  return new Overlay(options);
+}
+
+/**
+ * Initialize a new `Overlay`.
+ *
+ * @param {Object} options
+ * @api public
+ */
+
+function Overlay(options) {
+  Emitter.call(this);
+  options = options || {};
+  this.target = options.target || document.body;
+  this.closable = options.closable;
+  this.el = domify(tmpl);
+  if (this.closable) {
+	event.bind(this.el, 'click', this.hide.bind(this));
+    classes(this.el).add('closable');
+  }
+}
+
+/**
+ * Mixin emitter.
+ */
+
+Emitter(Overlay.prototype);
+
+/**
+ * Show the overlay.
+ *
+ * Emits "show" event.
+ *
+ * @return {Overlay}
+ * @api public
+ */
+
+Overlay.prototype.show = function(){
+  var self = this;
+
+  this.emit('show');
+  this.target.appendChild(this.el);
+
+  //class removed in a timeout to save animation
+  setTimeout( function () {
+  	classes(self.el).remove('hidden');
+  });
+
+  return this;
+};
+
+/**
+ * Hide the overlay.
+ *
+ * Emits "hide" event.
+ *
+ * @return {Overlay}
+ * @api public
+ */
+
+Overlay.prototype.hide = function(){
+  this.emit('hide');
+  return this.remove();
+};
+
+/**
+ * Hide the overlay without emitting "hide".
+ *
+ * Emits "close" event.
+ *
+ * @return {Overlay}
+ * @api public
+ */
+
+Overlay.prototype.remove = function(){
+  var self = this;
+  this.emit('close');
+  classes(this.el).add('hidden');
+  setTimeout(function(){
+    self.target.removeChild(self.el);
+  }, 350);
+  return this;
+};
+
+
+},{"./template.html":26,"classes":6,"domify":13,"emitter":14,"event":8}],26:[function(require,module,exports){
+module.exports = "<div class=\"overlay hidden\"></div>\r\n";
+
+},{}],27:[function(require,module,exports){
+/**
+ * @module parenthesis
+ */
+module.exports = {
+	parse: require('./parse'),
+	stringify: require('./stringify')
+};
+},{"./parse":28,"./stringify":29}],28:[function(require,module,exports){
+/**
+ * @module  parenthesis/parse
+ *
+ * Parse a string with parenthesis.
+ *
+ * @param {string} str A string with parenthesis
+ *
+ * @return {Array} A list with parsed parens, where 0 is initial string.
+ */
+
+//TODO: implement sequential parser of this algorithm, compare performance.
+module.exports = function(str, bracket){
+	//pretend non-string parsed per-se
+	if (typeof str !== 'string') return [str];
+
+	var res = [], prevStr;
+
+	bracket = bracket || '()';
+
+	//create parenthesis regex
+	var pRE = new RegExp(['\\', bracket[0], '[^\\', bracket[0], '\\', bracket[1], ']*\\', bracket[1]].join(''));
+
+	function replaceToken(token, idx, str){
+		//save token to res
+		var refId = res.push(token.slice(1,-1));
+
+		return '\\' + refId;
+	}
+
+	//replace paren tokens till there’s none
+	while (str != prevStr) {
+		prevStr = str;
+		str = str.replace(pRE, replaceToken);
+	}
+
+	//save resulting str
+	res.unshift(str);
+
+	return res;
+};
+},{}],29:[function(require,module,exports){
+/**
+ * @module parenthesis/stringify
+ *
+ * Stringify an array/object with parenthesis references
+ *
+ * @param {Array|Object} arr An array or object where 0 is initial string
+ *                           and every other key/value is reference id/value to replace
+ *
+ * @return {string} A string with inserted regex references
+ */
+
+//FIXME: circular references causes recursions here
+//TODO: there’s possible a recursive version of this algorithm, so test it & compare
+module.exports = function (str, refs, bracket){
+	var prevStr;
+
+	//pretend bad string stringified with no parentheses
+	if (!str) return '';
+
+	if (typeof str !== 'string') {
+		bracket = refs;
+		refs = str;
+		str = refs[0];
+	}
+
+	bracket = bracket || '()';
+
+	function replaceRef(token, idx, str){
+		return bracket[0] + refs[token.slice(1)] + bracket[1];
+	}
+
+	while (str != prevStr) {
+		prevStr = str;
+		str = str.replace(/\\[0-9]+/, replaceRef);
+	}
+
+	return str;
+};
+},{}],30:[function(require,module,exports){
+/**
+ * @module  queried
  */
 
 
@@ -1334,20 +1584,15 @@ catch (e) {
 }
 
 
+/** Helper methods */
+q.matches = require('./lib/pseudos/matches');
+
+
 module.exports = q;
-},{"./lib/":20,"./lib/pseudos/has":21,"./lib/pseudos/matches":22,"./lib/pseudos/not":23,"./lib/pseudos/root":24,"./lib/pseudos/scope":25,"get-doc":29}],20:[function(require,module,exports){
+},{"./lib/":31,"./lib/pseudos/has":32,"./lib/pseudos/matches":33,"./lib/pseudos/not":34,"./lib/pseudos/root":35,"./lib/pseudos/scope":36,"get-doc":15}],31:[function(require,module,exports){
 /**
- * A query engine (with no pseudo classes yet).
- *
  * @module queried/lib/index
  */
-
-//TODO: jquery selectors
-//TODO: test order of query result (should be compliant with querySelectorAll)
-//TODO: third query param - include self
-//TODO: .closest, .all, .next, .prev, .parent, .filter, .mathes etc methods - all with the same API: query(selector, [el], [incSelf], [within]).
-//TODO: .all('.x', '.selector');
-//TODO: use universal pseudo mapper/filter instead of separate ones.
 
 
 var slice = require('sliced');
@@ -1361,57 +1606,6 @@ var arrayify = require('arrayify-compact');
 var doc = require('get-doc');
 
 
-/** Registered pseudos */
-var pseudos = {};
-var filters = {};
-var mappers = {};
-
-
-/** Regexp to grab pseudos with params */
-var pseudoRE;
-
-
-/**
- * Append a new filtering (classic) pseudo
- *
- * @param {string} name Pseudo name
- * @param {Function} filter A filtering function
- */
-function registerFilter(name, filter, incSelf){
-	if (pseudos[name]) return;
-
-	//save pseudo filter
-	pseudos[name] = filter;
-	pseudos[name].includeSelf = incSelf;
-	filters[name] = true;
-
-	regenerateRegExp();
-}
-
-
-/**
- * Append a new mapping (relative-like) pseudo
- *
- * @param {string} name pseudo name
- * @param {Function} mapper map function
- */
-function registerMapper(name, mapper, incSelf){
-	if (pseudos[name]) return;
-
-	pseudos[name] = mapper;
-	pseudos[name].includeSelf = incSelf;
-	mappers[name] = true;
-
-	regenerateRegExp();
-}
-
-
-/** Update regexp catching pseudos */
-function regenerateRegExp(){
-	pseudoRE = new RegExp('::?(' + Object.keys(pseudos).join('|') + ')(\\\\[0-9]+)?');
-}
-
-
 /**
  * Query wrapper - main method to query elements.
  */
@@ -1420,13 +1614,25 @@ function queryMultiple(selector, el) {
 	if (!selector) return [];
 
 	//return elements passed as a selector unchanged (cover params case)
-	if (!isString(selector)) return isArray(selector) ? selector : [selector];
+	if (!isString(selector)) {
+		if (isArray(selector)) {
+			return unique(arrayify(selector.map(function (sel) {
+				return queryMultiple(sel, el);
+			})));
+		} else {
+			return [selector];
+		}
+	}
 
 	//catch polyfillable first `:scope` selector - just erase it, works just fine
-	if (pseudos.scope) selector = selector.replace(/^\s*:scope/, '');
+	if (pseudos.scope) {
+		selector = selector.replace(/^\s*:scope/, '');
+	}
 
 	//ignore non-queryable containers
-	if (!el) el = [querySingle.document];
+	if (!el) {
+		el = [querySingle.document];
+	}
 
 	//treat passed list
 	else if (isArrayLike(el)) {
@@ -1439,7 +1645,9 @@ function queryMultiple(selector, el) {
 	}
 
 	//make any ok element a list
-	else el = [el];
+	else {
+		el = [el];
+	}
 
 	return qPseudos(el, selector);
 }
@@ -1533,6 +1741,58 @@ function qList(list, selector){
 }
 
 
+/** Registered pseudos */
+var pseudos = {};
+var filters = {};
+var mappers = {};
+
+
+/** Regexp to grab pseudos with params */
+var pseudoRE;
+
+
+/**
+ * Append a new filtering (classic) pseudo
+ *
+ * @param {string} name Pseudo name
+ * @param {Function} filter A filtering function
+ */
+function registerFilter(name, filter, incSelf){
+	if (pseudos[name]) return;
+
+	//save pseudo filter
+	pseudos[name] = filter;
+	pseudos[name].includeSelf = incSelf;
+	filters[name] = true;
+
+	regenerateRegExp();
+}
+
+
+/**
+ * Append a new mapping (relative-like) pseudo
+ *
+ * @param {string} name pseudo name
+ * @param {Function} mapper map function
+ */
+function registerMapper(name, mapper, incSelf){
+	if (pseudos[name]) return;
+
+	pseudos[name] = mapper;
+	pseudos[name].includeSelf = incSelf;
+	mappers[name] = true;
+
+	regenerateRegExp();
+}
+
+
+/** Update regexp catching pseudos */
+function regenerateRegExp(){
+	pseudoRE = new RegExp('::?(' + Object.keys(pseudos).join('|') + ')(\\\\[0-9]+)?');
+}
+
+
+
 /** Exports */
 querySingle.all = queryMultiple;
 querySingle.registerFilter = registerFilter;
@@ -1541,8 +1801,9 @@ querySingle.registerMapper = registerMapper;
 /** Default document representative to use for DOM */
 querySingle.document = doc;
 
+
 module.exports = querySingle;
-},{"array-unique":26,"arrayify-compact":27,"get-doc":29,"get-uid":31,"mutype/is-array":33,"mutype/is-array-like":32,"mutype/is-string":35,"parenthesis":36,"sliced":39}],21:[function(require,module,exports){
+},{"array-unique":4,"arrayify-compact":5,"get-doc":15,"get-uid":16,"mutype/is-array":22,"mutype/is-array-like":21,"mutype/is-string":24,"parenthesis":27,"sliced":37}],32:[function(require,module,exports){
 var q = require('..');
 
 function has(el, subSelector){
@@ -1550,10 +1811,11 @@ function has(el, subSelector){
 }
 
 module.exports = has;
-},{"..":20}],22:[function(require,module,exports){
+},{"..":31}],33:[function(require,module,exports){
+/** :matches pseudo */
+
 var q = require('..');
 
-/** CSS4 matches */
 function matches(el, selector){
 	if (!el.parentNode) {
 		var fragment = q.document.createDocumentFragment();
@@ -1564,7 +1826,7 @@ function matches(el, selector){
 }
 
 module.exports = matches;
-},{"..":20}],23:[function(require,module,exports){
+},{"..":31}],34:[function(require,module,exports){
 var matches = require('./matches');
 
 function not(el, selector){
@@ -1572,13 +1834,13 @@ function not(el, selector){
 }
 
 module.exports = not;
-},{"./matches":22}],24:[function(require,module,exports){
+},{"./matches":33}],35:[function(require,module,exports){
 var q = require('..');
 
 module.exports = function root(el){
 	return el === q.document.documentElement;
 };
-},{"..":20}],25:[function(require,module,exports){
+},{"..":31}],36:[function(require,module,exports){
 /**
  * :scope pseudo
  * Return element if it has `scoped` attribute.
@@ -1589,248 +1851,10 @@ module.exports = function root(el){
 module.exports = function scope(el){
 	return el.hasAttribute('scoped');
 };
-},{}],26:[function(require,module,exports){
-/*!
- * array-unique <https://github.com/jonschlinkert/array-unique>
- *
- * Copyright (c) 2014 Jon Schlinkert, contributors.
- * Licensed under the MIT license.
- */
-
-'use strict';
-
-module.exports = function unique(arr) {
-  if (!Array.isArray(arr)) {
-    throw new TypeError('array-unique expects an array.');
-  }
-
-  var len = arr.length;
-  var i = -1;
-
-  while (i++ < len) {
-    var j = i + 1;
-
-    for (; j < arr.length; ++j) {
-      if (arr[i] === arr[j]) {
-        arr.splice(j--, 1);
-      }
-    }
-  }
-  return arr;
-};
-
-},{}],27:[function(require,module,exports){
-/*!
- * arrayify-compact <https://github.com/jonschlinkert/arrayify-compact>
- *
- * Copyright (c) 2014 Jon Schlinkert, contributors.
- * Licensed under the MIT License
- */
-
-'use strict';
-
-var flatten = require('array-flatten');
-
-module.exports = function(arr) {
-  return flatten(!Array.isArray(arr) ? [arr] : arr)
-    .filter(Boolean);
-};
-
-},{"array-flatten":28}],28:[function(require,module,exports){
-/**
- * Recursive flatten function with depth.
- *
- * @param  {Array}  array
- * @param  {Array}  result
- * @param  {Number} depth
- * @return {Array}
- */
-function flattenDepth (array, result, depth) {
-  for (var i = 0; i < array.length; i++) {
-    var value = array[i]
-
-    if (depth > 0 && Array.isArray(value)) {
-      flattenDepth(value, result, depth - 1)
-    } else {
-      result.push(value)
-    }
-  }
-
-  return result
-}
-
-/**
- * Recursive flatten function. Omitting depth is slightly faster.
- *
- * @param  {Array} array
- * @param  {Array} result
- * @return {Array}
- */
-function flattenForever (array, result) {
-  for (var i = 0; i < array.length; i++) {
-    var value = array[i]
-
-    if (Array.isArray(value)) {
-      flattenForever(value, result)
-    } else {
-      result.push(value)
-    }
-  }
-
-  return result
-}
-
-/**
- * Flatten an array, with the ability to define a depth.
- *
- * @param  {Array}  array
- * @param  {Number} depth
- * @return {Array}
- */
-module.exports = function (array, depth) {
-  if (depth == null) {
-    return flattenForever(array, [])
-  }
-
-  return flattenDepth(array, [], depth)
-}
-
-},{}],29:[function(require,module,exports){
-/**
- * @module  get-doc
- */
-
-var hasDom = require('has-dom');
-
-module.exports = hasDom() ? document : null;
-},{"has-dom":30}],30:[function(require,module,exports){
-'use strict';
-module.exports = function () {
-	return typeof window !== 'undefined'
-		&& typeof document !== 'undefined'
-		&& typeof document.createElement === 'function';
-};
-
-},{}],31:[function(require,module,exports){
-/** generate unique id for selector */
-var counter = Date.now() % 1e9;
-
-module.exports = function getUid(){
-	return (Math.random() * 1e9 >>> 0) + (counter++);
-};
-},{}],32:[function(require,module,exports){
-var isString = require('./is-string');
-var isArray = require('./is-array');
-var isFn = require('./is-fn');
-
-//FIXME: add tests from http://jsfiddle.net/ku9LS/1/
-module.exports = function (a){
-	return isArray(a) || (a && !isString(a) && !a.nodeType && (typeof window != 'undefined' ? a != window : true) && !isFn(a) && typeof a.length === 'number');
-}
-},{"./is-array":33,"./is-fn":34,"./is-string":35}],33:[function(require,module,exports){
-module.exports = function(a){
-	return a instanceof Array;
-}
-},{}],34:[function(require,module,exports){
-module.exports = function(a){
-	return !!(a && a.apply);
-}
-},{}],35:[function(require,module,exports){
-module.exports = function(a){
-	return typeof a === 'string' || a instanceof String;
-}
-},{}],36:[function(require,module,exports){
-/**
- * @module parenthesis
- */
-module.exports = {
-	parse: require('./parse'),
-	stringify: require('./stringify')
-};
-},{"./parse":37,"./stringify":38}],37:[function(require,module,exports){
-/**
- * @module  parenthesis/parse
- *
- * Parse a string with parenthesis.
- *
- * @param {string} str A string with parenthesis
- *
- * @return {Array} A list with parsed parens, where 0 is initial string.
- */
-
-//TODO: implement sequential parser of this algorithm, compare performance.
-module.exports = function(str, bracket){
-	//pretend non-string parsed per-se
-	if (typeof str !== 'string') return [str];
-
-	var res = [], prevStr;
-
-	bracket = bracket || '()';
-
-	//create parenthesis regex
-	var pRE = new RegExp(['\\', bracket[0], '[^\\', bracket[0], '\\', bracket[1], ']*\\', bracket[1]].join(''));
-
-	function replaceToken(token, idx, str){
-		//save token to res
-		var refId = res.push(token.slice(1,-1));
-
-		return '\\' + refId;
-	}
-
-	//replace paren tokens till there’s none
-	while (str != prevStr) {
-		prevStr = str;
-		str = str.replace(pRE, replaceToken);
-	}
-
-	//save resulting str
-	res.unshift(str);
-
-	return res;
-};
-},{}],38:[function(require,module,exports){
-/**
- * @module parenthesis/stringify
- *
- * Stringify an array/object with parenthesis references
- *
- * @param {Array|Object} arr An array or object where 0 is initial string
- *                           and every other key/value is reference id/value to replace
- *
- * @return {string} A string with inserted regex references
- */
-
-//FIXME: circular references causes recursions here
-//TODO: there’s possible a recursive version of this algorithm, so test it & compare
-module.exports = function (str, refs, bracket){
-	var prevStr;
-
-	//pretend bad string stringified with no parentheses
-	if (!str) return '';
-
-	if (typeof str !== 'string') {
-		bracket = refs;
-		refs = str;
-		str = refs[0];
-	}
-
-	bracket = bracket || '()';
-
-	function replaceRef(token, idx, str){
-		return bracket[0] + refs[token.slice(1)] + bracket[1];
-	}
-
-	while (str != prevStr) {
-		prevStr = str;
-		str = str.replace(/\\[0-9]+/, replaceRef);
-	}
-
-	return str;
-};
-},{}],39:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = exports = require('./lib/sliced');
 
-},{"./lib/sliced":40}],40:[function(require,module,exports){
+},{"./lib/sliced":38}],38:[function(require,module,exports){
 
 /**
  * An Array.prototype.slice.call(arguments) alternative
@@ -1865,15 +1889,17 @@ module.exports = function (args, slice, sliceEnd) {
 }
 
 
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 function extend(target) {
     for (var i = 1; i < arguments.length; i++) {
         var source = arguments[i]
 
         for (var key in source) {
-            if (source.hasOwnProperty(key)) {
+            if (hasOwnProperty.call(source, key)) {
                 target[key] = source[key]
             }
         }
@@ -1883,6 +1909,8 @@ function extend(target) {
 }
 
 },{}],"swiper-fullscreen":[function(require,module,exports){
+'use strict';
+
 var swiper = require('swiper');
 var dialog = require('dialog-component');
 var extend = require('xtend/mutable');
@@ -1899,7 +1927,7 @@ var q = require('queried');
  */
 function SwiperFullscreen(options) {
 
-	if (!(this instanceof(SwiperFullscreen))) return new SwiperFullscreen(options);
+	if (!(this instanceof SwiperFullscreen)) return new SwiperFullscreen(options);
 
 	var self = this;
 
@@ -1913,7 +1941,7 @@ function SwiperFullscreen(options) {
 	self.el = domify(sliderHTML);
 
 	//create and append slides
-	self.data.forEach(function(itemData) {
+	self.data.forEach(function (itemData) {
 		var item = self.render(itemData);
 		self.el.querySelector('.swiper-wrapper').appendChild(item);
 	});
@@ -1924,7 +1952,6 @@ function SwiperFullscreen(options) {
 
 	//create swiper instance for the gallery
 	self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
-
 }
 
 extend(SwiperFullscreen.prototype, {
@@ -1943,30 +1970,19 @@ extend(SwiperFullscreen.prototype, {
 	},
 
 	/**
-	 * show the dialog with instance slider
-	 * @param  {Number} slideIndex Index of slide to show when opened
-	 */
-	show: function(slideIndex) {
+  * show the dialog with instance slider
+  * @param  {Number} slideIndex Index of slide to show when opened
+  */
+	show: function show(slideIndex) {
 
 		//prepare and open dialog with swiper
-		this.dialog = dialog(null, this.el)
-		.effect('fade')
-		.overlay()
-		.fixed()
-		.closable()
-		.escapable()
-		.addClass('dialog-slider-fullscreen')
-		.on('show', function () {
+		this.dialog = dialog(null, this.el).effect('fade').overlay().fixed().closable().escapable().addClass('dialog-slider-fullscreen').on('show', function () {
 			css(document.body, {
 				'overflow': 'hidden'
 			});
-		})
-		.on('close', closeDialog)
-		.on('hide', closeDialog)
-		.on('escape', closeDialog)
-		.show();
+		}).on('close', closeDialog).on('hide', closeDialog).on('escape', closeDialog).show();
 
-		function closeDialog () {
+		function closeDialog() {
 			css(document.body, {
 				'overflow': null
 			});
@@ -1974,34 +1990,29 @@ extend(SwiperFullscreen.prototype, {
 
 		this.swiper.update();
 		if (typeof slideIndex != 'undefined') this.swiper.slideTo(slideIndex, 0);
-
 	},
 
 	/**
-	 * hide the instanse's dialog
-	 */
-	hide: function() {
+  * hide the instanse's dialog
+  */
+	hide: function hide() {
 		this.dialog && this.dialog.hide();
 	},
 
 	/**
-	 * render slide item with data provided
-	 * @param  {Object} data - data to be rendered
-	 * @return {DomObject}      Slide DOM element
-	 */
-	render: function(data) {
+  * render slide item with data provided
+  * @param  {Object} data - data to be rendered
+  * @return {DomObject}      Slide DOM element
+  */
+	render: function render(data) {
 		data.title = data.title || '';
-		return domify(
-			itemHTML
-				.replace("%src%", data.src)
-				.replace("%title%", data.title)
-		);
+		return domify(itemHTML.replace("%src%", data.src).replace("%title%", data.title));
 	},
 
 	/**
-	 * Method describing how navigation is appended
-	 */
-	appendNavigation: function() {
+  * Method describing how navigation is appended
+  */
+	appendNavigation: function appendNavigation() {
 		var self = this;
 
 		//create elements for nav buttons
@@ -2011,10 +2022,10 @@ extend(SwiperFullscreen.prototype, {
 		nextArrow.className = 'swiper-button-next';
 
 		//bind click events
-		prevArrow.addEventListener('click', function() {
+		prevArrow.addEventListener('click', function () {
 			self.swiper.slidePrev();
 		});
-		nextArrow.addEventListener('click', function() {
+		nextArrow.addEventListener('click', function () {
 			self.swiper.slideNext();
 		});
 
@@ -2027,7 +2038,8 @@ extend(SwiperFullscreen.prototype, {
 });
 
 module.exports = SwiperFullscreen;
-},{"./index.html":1,"./item.html":2,"dialog-component":3,"domify":15,"mucss/css":16,"queried":19,"swiper":"swiper","xtend/mutable":41}],"swiper":[function(require,module,exports){
+
+},{"./index.html":1,"./item.html":2,"dialog-component":11,"domify":13,"mucss/css":18,"queried":30,"swiper":"swiper","xtend/mutable":39}],"swiper":[function(require,module,exports){
 /**
  * Swiper 3.0.4
  * Most modern mobile touch slider and framework with hardware accelerated transitions
