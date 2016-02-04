@@ -1926,32 +1926,31 @@ var q = require('queried');
  * @param {Object} options Initialization options
  */
 function SwiperFullscreen(options) {
+	var _this = this;
 
 	if (!(this instanceof SwiperFullscreen)) return new SwiperFullscreen(options);
 
-	var self = this;
-
-	extend(self, options);
+	extend(this, options);
 
 	if (options.swiper) {
-		self.swiper = Object.create(SwiperFullscreen.prototype.swiper);
-		extend(self.swiper, options.swiper);
+		this.swiper = Object.create(SwiperFullscreen.prototype.swiper);
+		extend(this.swiper, options.swiper);
 	}
 
-	self.el = domify(sliderHTML);
+	this.el = domify(sliderHTML);
 
 	//create and append slides
-	self.data.forEach(function (itemData) {
-		var item = self.render(itemData);
-		self.el.querySelector('.swiper-wrapper').appendChild(item);
+	this.data.forEach(function (itemData) {
+		var item = _this.render(itemData);
+		_this.el.querySelector('.swiper-wrapper').appendChild(item);
 	});
 
-	if (self.navigation && self.data.length > 1) {
-		self.appendNavigation();
+	if (this.navigation && this.data.length > 1) {
+		this.appendNavigation();
 	}
 
 	//create swiper instance for the gallery
-	self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
+	this.swiper = new Swiper(q('.swiper-container', this.el), this.swiper);
 }
 
 extend(SwiperFullscreen.prototype, {
@@ -2013,7 +2012,7 @@ extend(SwiperFullscreen.prototype, {
   * Method describing how navigation is appended
   */
 	appendNavigation: function appendNavigation() {
-		var self = this;
+		var _this2 = this;
 
 		//create elements for nav buttons
 		var prevArrow = document.createElement('div');
@@ -2023,10 +2022,10 @@ extend(SwiperFullscreen.prototype, {
 
 		//bind click events
 		prevArrow.addEventListener('click', function () {
-			self.swiper.slidePrev();
+			return _this2.swiper.slidePrev();
 		});
 		nextArrow.addEventListener('click', function () {
-			self.swiper.slideNext();
+			return _this2.swiper.slideNext();
 		});
 
 		//append the buttons
@@ -2034,7 +2033,6 @@ extend(SwiperFullscreen.prototype, {
 		container.appendChild(prevArrow);
 		container.appendChild(nextArrow);
 	}
-
 });
 
 module.exports = SwiperFullscreen;

@@ -1,11 +1,11 @@
-var swiper = require('swiper');
-var dialog = require('dialog-component');
-var extend = require('xtend/mutable');
-var domify = require('domify');
-var css = require('mucss/css');
-var sliderHTML = require('./index.html');
-var itemHTML = require('./item.html');
-var q = require('queried');
+const swiper = require('swiper');
+const dialog = require('dialog-component');
+const extend = require('xtend/mutable');
+const domify = require('domify');
+const css = require('mucss/css');
+const sliderHTML = require('./index.html');
+const itemHTML = require('./item.html');
+const q = require('queried');
 
 /**
  * Create an instance of fullscreen swiper
@@ -16,29 +16,27 @@ function SwiperFullscreen(options) {
 
 	if (!(this instanceof(SwiperFullscreen))) return new SwiperFullscreen(options);
 
-	var self = this;
-
-	extend(self, options);
+	extend(this, options);
 
 	if (options.swiper) {
-		self.swiper = Object.create(SwiperFullscreen.prototype.swiper);
-		extend(self.swiper, options.swiper);
+		this.swiper = Object.create(SwiperFullscreen.prototype.swiper);
+		extend(this.swiper, options.swiper);
 	}
 
-	self.el = domify(sliderHTML);
+	this.el = domify(sliderHTML);
 
 	//create and append slides
-	self.data.forEach(function(itemData) {
-		var item = self.render(itemData);
-		self.el.querySelector('.swiper-wrapper').appendChild(item);
+	this.data.forEach(itemData => {
+		const item = this.render(itemData);
+		this.el.querySelector('.swiper-wrapper').appendChild(item);
 	});
 
-	if (self.navigation && self.data.length > 1) {
-		self.appendNavigation();
+	if (this.navigation && this.data.length > 1) {
+		this.appendNavigation();
 	}
 
 	//create swiper instance for the gallery
-	self.swiper = new Swiper(q('.swiper-container', self.el), self.swiper);
+	this.swiper = new Swiper(q('.swiper-container', this.el), this.swiper);
 
 }
 
@@ -61,7 +59,7 @@ extend(SwiperFullscreen.prototype, {
 	 * show the dialog with instance slider
 	 * @param  {Number} slideIndex Index of slide to show when opened
 	 */
-	show: function(slideIndex) {
+	show(slideIndex) {
 
 		//prepare and open dialog with swiper
 		this.dialog = dialog(null, this.el)
@@ -95,7 +93,7 @@ extend(SwiperFullscreen.prototype, {
 	/**
 	 * hide the instanse's dialog
 	 */
-	hide: function() {
+	hide() {
 		this.dialog && this.dialog.hide();
 	},
 
@@ -104,7 +102,7 @@ extend(SwiperFullscreen.prototype, {
 	 * @param  {Object} data - data to be rendered
 	 * @return {DomObject}      Slide DOM element
 	 */
-	render: function(data) {
+	render(data) {
 		data.title = data.title || '';
 		return domify(
 			itemHTML
@@ -116,29 +114,22 @@ extend(SwiperFullscreen.prototype, {
 	/**
 	 * Method describing how navigation is appended
 	 */
-	appendNavigation: function() {
-		var self = this;
-
+	appendNavigation() {
 		//create elements for nav buttons
-		var prevArrow = document.createElement('div');
+		const prevArrow = document.createElement('div');
 		prevArrow.className = 'swiper-button-prev';
-		var nextArrow = document.createElement('div');
+		const nextArrow = document.createElement('div');
 		nextArrow.className = 'swiper-button-next';
 
 		//bind click events
-		prevArrow.addEventListener('click', function() {
-			self.swiper.slidePrev();
-		});
-		nextArrow.addEventListener('click', function() {
-			self.swiper.slideNext();
-		});
+		prevArrow.addEventListener('click', () => this.swiper.slidePrev());
+		nextArrow.addEventListener('click', () => this.swiper.slideNext());
 
 		//append the buttons
-		var container = q('.swiper-container', this.el);
+		const container = q('.swiper-container', this.el);
 		container.appendChild(prevArrow);
 		container.appendChild(nextArrow);
 	}
-
 });
 
 module.exports = SwiperFullscreen;
