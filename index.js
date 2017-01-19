@@ -73,12 +73,22 @@ class SwiperFullscreen {
 	 */
 	getItemsMarkup(data) {
 		return data.reduce((prev, curr) => {
+			let caption;
+
+			if (curr.title) {
+				caption = `
+					<div class="fs-swiper-caption">
+						${ curr.title }
+					</div>
+				`;
+			} else {
+				caption = '';
+			}
+
 			return prev + `
 				<div class="swiper-slide fs-swiper-slide">
 					<img class="fs-swiper-image swiper-lazy" data-src="${ curr.src }" />
-					<div class="fs-swiper-caption">
-						${ curr.title || '' }
-					</div>
+					${ caption }
 					<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
 				</div>
 			`;
