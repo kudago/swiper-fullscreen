@@ -75,7 +75,7 @@ class SwiperFullscreen {
 		return data.reduce((prev, curr) => {
 			let caption;
 
-			if (curr.title) {
+			if (curr.title && curr.title.trim()) {
 				caption = `
 					<div class="fs-swiper-caption">
 						${ curr.title }
