@@ -6,15 +6,6 @@ const css = require('mucss/css');
 const q = require('queried');
 const events = require('events-mixin');
 
-const SWIPER_DEFAULTS = {
-	loop: true,
-	effect: 'fade',
-	speed: 200,
-	lazyLoading: true,
-	preloadImages: false,
-	lazyLoadingOnTransitionStart: true,
-	keyboardControl: true,
-};
 
 /**
  * Create an instance of fullscreen swiper
@@ -23,10 +14,20 @@ const SWIPER_DEFAULTS = {
  */
 class SwiperFullscreen {
 	constructor(options) {
+		const data = options.data || [];
+
 		extend(this, {
-			data: [],
+			data,
 			navigation: true,
-			swiperOptions: SWIPER_DEFAULTS,
+			swiperOptions: {
+				loop: true,
+				effect: 'fade',
+				speed: 200,
+				lazyLoading: true,
+				preloadImages: false,
+				lazyLoadingOnTransitionStart: true,
+				keyboardControl: data.length > 1,
+			},
 		}, options);
 
 		const markup = this.getMarkup(this.data);
