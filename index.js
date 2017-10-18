@@ -15,6 +15,7 @@ const events = require('events-mixin');
 class SwiperFullscreen {
 	constructor(options) {
 		const data = options.data || [];
+		const hasOneSlide = data.length === 1;
 
 		extend(this, {
 			data,
@@ -26,7 +27,8 @@ class SwiperFullscreen {
 				lazyLoading: true,
 				preloadImages: false,
 				lazyLoadingOnTransitionStart: true,
-				keyboardControl: data.length > 1,
+				keyboardControl: !hasOneSlide,
+				onlyExternal: hasOneSlide,
 			},
 		}, options);
 
